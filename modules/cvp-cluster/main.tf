@@ -1,9 +1,6 @@
 provider "google" {
   region = var.gcp_region
 }
-data "google_project" "project" {
-  project_id = var.gcp_project_id
-}
 
 resource "google_compute_image" "centos" {
   name    = "cvp-centos-${var.cluster_name}"
