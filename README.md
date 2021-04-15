@@ -55,9 +55,39 @@ $ terraform plan -out=plan.out
 terraform apply plan.out
 ```
 
+### Variables
+Mandatory variables will be asked at runtime unless specified on the command line or using a [.tfvars file](terraform-tfvars)
+
+#### Mandatory
+- **gcp_project_id**: The name of the GCP Project where all resources will be launched. May also be obtained from the `GOOGLE_PROJECT` environment variable.
+- **gcp_region**: The region in which all GCP resources will be launched.
+- **gcp_zone**: The zone in which all GCP resources will be launched. Must be a valid zone within the desired `gcp_region`.
+- **cvp_cluster_name**: The name of the CVP cluster
+- **cvp_cluster_size**: The number of nodes in the CVP cluster. Must be 1 or 3 nodes.
+
+#### Optional
+- **gcp_network**: The network in which clusters will be launched. Leaving this blank will create a new network.
+- **cvp_cluster_vmtype**: The type of instances used for CVP
+- **cvp_cluster_public_management**: Whether the cluster UI and SSH ports (https/ssh) is publically accessible over the internet. Defaults to `false`.
+
+# Examples
+## Using command-line variables:
+
+```bash
+$ terraform apply -var gcp_project_id=myproject -var cvp_cluster_name=mycluster -var cvp_cluster_size=1 -var gcp_region=us-central1 -var gcp_zone=a
+```
+
+## Using a `.tfvars` file:
+**Note**: Before running this please replace the `gcp_project_id` variable in the provided example file with the correct name of your project.
+
+```
+$ terraform apply -var-file=examples/one-node-cvp-deployment.tfvars
+```
+
 # Bugs
 - [Running the module without explicitely setting a project will fail][terraform-no-project]
 
 [gcloud-install]: https://cloud.google.com/sdk/docs/install
 [terraform-download]: https://www.terraform.io/downloads.html
+[terraform-tfvars]: https://www.terraform.io/docs/language/values/variables.html#variable-definitions-tfvars-files
 [terraform-no-project]: https://github.com/hashicorp/terraform-provider-google/issues/4856
