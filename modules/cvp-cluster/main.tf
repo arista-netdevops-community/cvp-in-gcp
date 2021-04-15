@@ -27,6 +27,10 @@ resource "google_compute_instance_template" "cvp_nodes" {
     app = "cvp"
   }
 
+  metadata = {
+    "ssh-keys" = var.vm_ssh_key != null ? "cvpadmin:${var.vm_ssh_key}" : null
+  }
+
   disk {
     source_image = google_compute_image.centos.self_link
     auto_delete  = true
@@ -34,7 +38,7 @@ resource "google_compute_instance_template" "cvp_nodes" {
   }
 
   disk {
-    auto_delete  = false
+    auto_delete  = var.vm_remove_data_disk
     boot         = false
     disk_type    = "pd-ssd"
     disk_size_gb = 1024

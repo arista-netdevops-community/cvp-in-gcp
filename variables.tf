@@ -56,3 +56,13 @@ variable "cvp_cluster_public_management" {
   type        = bool
   default     = false
 }
+variable "cvp_cluster_vm_key" {
+  description = "Public SSH key used to access instances in the CVP cluster."
+  type        = string
+  default     = null
+}
+variable "cvp_cluster_remove_disks" {
+  description = "Whether data disks created for the instances will be removed when destroying them."
+  type        = bool
+  default     = false
+}

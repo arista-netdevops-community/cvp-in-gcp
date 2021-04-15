@@ -42,4 +42,6 @@ module "cvp_cluster" {
   cluster_public_management = var.cvp_cluster_public_management
   vm_type                   = var.cvp_cluster_vm_type
   vm_image                  = local.cvp_cluster.vm_image.location
+  vm_ssh_key                = var.cvp_cluster_vm_key != null ? file(var.cvp_cluster_vm_key) : null
+  vm_remove_data_disk       = var.cvp_cluster_remove_disks
 }

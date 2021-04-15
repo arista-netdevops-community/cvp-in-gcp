@@ -34,3 +34,11 @@ variable "vm_type" {
 variable "vm_image" {
   type = string
 }
+variable "vm_ssh_key" {
+  type    = string
+  default = null
+}
+variable "vm_remove_data_disk" {
+  type    = bool
+  default = false
+}
