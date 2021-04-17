@@ -42,6 +42,20 @@ module "cvp_cluster" {
   cluster_public_management = var.cvp_cluster_public_management
   vm_type                   = var.cvp_cluster_vm_type
   vm_image                  = local.cvp_cluster.vm_image.location
-  vm_ssh_key                = fileexists(var.cvp_cluster_vm_key) == true ? file(var.cvp_cluster_vm_key) : null
+  vm_ssh_key                = fileexists(var.cvp_cluster_vm_key) == true ? "${split(" ", file(var.cvp_cluster_vm_key))[0]} ${split(" ", file(var.cvp_cluster_vm_key))[1]}" : null
+  vm_admin_user             = var.cvp_cluster_vm_admin_user
   vm_remove_data_disk       = var.cvp_cluster_remove_disks
+}
+module "cvp_provision_nodes" {
+  source = "./modules/cvp-provision"
+
+  gcp_project_id   = var.gcp_project_id != null ? var.gcp_project_id : data.google_project.project.project_id
+  gcp_region       = var.gcp_region
+  gcp_network      = var.gcp_network != null ? var.gcp_network : google_compute_network.vpc_network[0].name
+
+  nodes              = module.cvp_cluster.cluster_nodes
+  vm_ssh_key         = var.cvp_cluster_vm_key != null ? (fileexists(var.cvp_cluster_vm_key) == true ? file(var.cvp_cluster_vm_key) : null) : null
+  vm_admin_user      = var.cvp_cluster_vm_admin_user
+  vm_private_ssh_key = var.cvp_cluster_vm_private_key != null ? (fileexists(var.cvp_cluster_vm_private_key) == true ? file(var.cvp_cluster_vm_private_key) : null) : null
+  vm_password        = var.cvp_cluster_vm_password != null ? var.cvp_cluster_vm_password : null
 }

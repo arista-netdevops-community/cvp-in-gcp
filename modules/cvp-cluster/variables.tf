@@ -28,6 +28,10 @@ variable "cluster_public_management" {
   default = false
 }
 
+variable "vm_admin_user" {
+  type    = string
+  default = "cvpadmin"
+}
 variable "vm_type" {
   type = string
 }

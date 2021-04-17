@@ -25,7 +25,7 @@ resource "google_compute_instance_template" "cvp_nodes" {
   }
 
   metadata = {
-    "ssh-keys" = var.vm_ssh_key != null ? "cvpadmin:${var.vm_ssh_key}" : null
+    "ssh-keys" = var.vm_ssh_key != null ? "${var.vm_admin_user}:${var.vm_ssh_key}" : null
   }
 
   disk {
