@@ -8,6 +8,10 @@ variable "vm_private_ssh_key" {
   type    = string
   default = null
 }
+variable "vm_private_ssh_key_path" {
+  type    = string
+  default = null
+}
 variable "vm_password" {
   type    = string
   default = null

@@ -1,0 +1,21 @@
+- hosts: all
+  become: yes
+  tasks:
+    - name: Prepare data disk
+      filesystem:
+        fstype: ext4
+        dev: /dev/disk/by-id/scsi-0Google_PersistentDisk_sdx
+        opts: -L cvp-data
+
+    - name: Create data directory
+      file:
+        path: /data
+        state: directory
+
+    - name: Mount data disk
+      mount:
+        path: /data
+        src: LABEL=cvp-data
+        fstype: ext4
+        state: mounted
+        opts: noatime
