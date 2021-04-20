@@ -43,13 +43,13 @@ We suggest that you create a profile and authenticate the cli using these steps:
 ```bash
 $ gcloud config configurations create cvp-profile
 $ gcloud config configurations activate cvp-profile
-$ gcloud init
+$ gcloud init # Choose [1] Re-initialize this configuration [arista-cvp] with new settings
 $ gcloud auth application-default login
 ```
 
 Feel free to change `cvp-profile` to whatever profile name you prefer.
 
-##  3. <a name='Runningterraform'></a>Running terraform
+##  3. <a name='Runningterraform'></a>Quickstart
 These steps assume that you created a profile following the steps in the [gcloud client](#gcloudclient) section:
 - Activate the profile:
 
@@ -69,10 +69,15 @@ $ export GOOGLE_PROJECT=your_project_name
 $ terraform init
 ```
 
+- Edit the `examples/one-node-cvp-deployment.tfvars` file and replace with the desired values.
+```
+$ vi examples/one-node-cvp-deployment.tfvars
+```
+
 - Plan your bootstrap run: 
 
 ```bash
-$ terraform plan -out=plan.out -target module.cvp_cluster
+$ terraform plan -out=plan.out -var-file=examples/one-node-cvp-deployment.tfvars -target module.cvp_cluster
 ```
 
 - Review your plan
@@ -82,10 +87,12 @@ $ terraform plan -out=plan.out -target module.cvp_cluster
 terraform apply plan.out
 ```
 
+> At this point your infrastructure should be running on GCP, but CVP hasn't been provisioned yet.
+
 - Plan your full provisioning run:
 
 ```bash
-$ terraform plan -out=plan.out
+$ terraform plan -out=plan.out -var-file=examples/one-node-cvp-deployment.tfvars
 ```
 
 - Review your plan
@@ -109,6 +116,7 @@ Mandatory variables will be asked at runtime unless specified on the command lin
 - **gcp_zone**: The zone in which all GCP resources will be launched. Must be a valid zone within the desired `gcp_region`.
 - **cvp_cluster_name**: The name of the CVP cluster
 - **cvp_cluster_size**: The number of nodes in the CVP cluster. Must be 1 or 3 nodes.
+- **cvp_download_token**: Arista Portal token used to download CVP.
 
 ####  3.2.2. <a name='Optional'></a>Optional
 - **gcp_network**: The network in which clusters will be launched. Leaving this blank will create a new network.
@@ -119,6 +127,8 @@ Mandatory variables will be asked at runtime unless specified on the command lin
 - **cvp_cluster_remove_disks**: Whether data disks created for the instances will be removed when destroying them. Defaults to `false`.
 - **cvp_cluster_vm_private_key**: Private SSH key used to access instances in the CVP cluster.
 - **cvp_cluster_vm_password**: Password used to access instances in the CVP cluster.
+- **cvp_version**: CVP version to install on the cluster.
+- **cvp_install_size**: CVP installation size. The module will try to guess the best installation size based on the vm size if not provided. Valid values are `demo`, `small`, `production` and `prod_wifi`.
 
 ##  4. <a name='Examples'></a>Examples
 ###  4.1. <a name='Usingcommand-linevariables:'></a>Using command-line variables:
@@ -140,9 +150,10 @@ $ terraform apply -var-file=examples/one-node-cvp-deployment.tfvars # subsequent
 - Data disks will **not** be removed when destroying the environment unless `cvp_cluster_remove_disks` is set to `true`. Make sure to remove them manually when they're no longer needed.
 
 ##  6. <a name='BugsandLimitations'></a>Bugs and Limitations
-- [Running the module without explicitely setting a project will fail][terraform-no-project]
-- Resizing clusters is not supported at this time
+- [Running the module without explicitely setting a project will fail][terraform-no-project].
+- Resizing clusters is not supported at this time.
 - This module connects to the instance using the `root` user instead of the declared user for provisioning due to limitations in the base image that's being used. If you know your way around terraform and understand what you're doing, this behaviour can be changed by editing the `modules/cvp-provision/main.tf` file.
+- CVP installation size auto-discovery only works for custom instances at this time.
 
 [gcloud-install]: https://cloud.google.com/sdk/docs/install
 [terraform-download]: https://www.terraform.io/downloads.html

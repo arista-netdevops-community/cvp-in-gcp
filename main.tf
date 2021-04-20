@@ -59,4 +59,7 @@ module "cvp_provision_nodes" {
   vm_private_ssh_key      = var.cvp_cluster_vm_private_key != null ? (fileexists(var.cvp_cluster_vm_private_key) == true ? file(var.cvp_cluster_vm_private_key) : null) : null
   vm_private_ssh_key_path = var.cvp_cluster_vm_private_key != null ? (fileexists(var.cvp_cluster_vm_private_key) == true ? var.cvp_cluster_vm_private_key : null) : null
   vm_password             = var.cvp_cluster_vm_password != null ? var.cvp_cluster_vm_password : null
+  cvp_version             = var.cvp_version
+  cvp_download_token      = var.cvp_download_token
+  cvp_install_size        = var.cvp_install_size != null ? var.cvp_install_size : null
 }

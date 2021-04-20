@@ -32,6 +32,7 @@ resource "google_compute_instance_template" "cvp_nodes" {
     source_image = google_compute_image.centos.self_link
     auto_delete  = true
     boot         = true
+    disk_size_gb = 35
   }
 
   disk {

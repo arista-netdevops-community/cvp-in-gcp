@@ -86,3 +86,22 @@ variable "cvp_cluster_remove_disks" {
   type        = bool
   default     = false
 }
+variable "cvp_version" {
+  description = "CVP version to install on the cluster."
+  type        = string
+  default     = "2020.3.1"
+}
+variable "cvp_download_token" {
+  description = "Arista Portal token used to download CVP."
+  type        = string
+}
+variable "cvp_install_size" {
+  description = "CVP installation size."
+  type        = string
+  default     = null
+
+  validation {
+    condition = var.cvp_install_size == "demo" || var.cvp_install_size == "small" || var.cvp_install_size == "production" || var.cvp_install_size == "prod_wifi" || var.cvp_install_size == null
+    error_message = "CVP install size must be one of 'demo', 'small', 'production' or 'prod_wifi'."
+  }
+}

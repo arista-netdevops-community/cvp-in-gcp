@@ -1,21 +1,110 @@
 - hosts: all
   become: yes
+  vars:
+    data_dir: /data
+    data_disk: sdx
+
   tasks:
+    - name: Image cleanup
+      file:
+        path: /etc/sysconfig/network-scripts/ifcfg-ens3
+        state: absent
+
+    - name: Resize root partition
+      shell:
+        cmd: bash -c "echo -e \"p\nd\n2\nn\np\n2\n\n\np\nw\nq\n\"|fdisk /dev/sda" || true
+
+    - name: Reread root partition
+      shell:
+        cmd: partprobe
+
+    - name: Resize root disk
+      shell:
+        cmd: resize2fs /dev/sda2
+
     - name: Prepare data disk
       filesystem:
         fstype: ext4
-        dev: /dev/disk/by-id/scsi-0Google_PersistentDisk_sdx
+        dev: /dev/disk/by-id/scsi-0Google_PersistentDisk_{{ data_disk }}
         opts: -L cvp-data
 
     - name: Create data directory
       file:
-        path: /data
+        path: "{{ data_dir }}"
         state: directory
 
     - name: Mount data disk
       mount:
-        path: /data
+        path: "{{ data_dir }}"
         src: LABEL=cvp-data
         fstype: ext4
         state: mounted
         opts: noatime
+
+    - name: Setup python
+      yum:
+        name:
+          - python-setuptools
+        state: latest
+
+    - name: Upgrade pip
+      pip:
+        extra_args: --upgrade
+        executable: pip3
+        name: pip
+
+    - name: Download EOS downloader
+      get_url:
+        url: https://raw.githubusercontent.com/arista-netdevops-community/eos-scripts/main/eos_download.py
+        dest: "{{ data_dir }}/eos_download.py"
+        mode: 0755
+
+    - name: Setup downloader dependencies
+      pip:
+        extra_args: --upgrade
+        executable: pip3
+        name:
+          - requests
+          - tqdm
+          - paramiko
+          - scp
+
+    - name: Download CVP
+      block:
+        - name: Run EOS downloader
+          shell:
+            cmd: "{{ data_dir }}/eos_download.py --api {{ api_token }} --ver cvp-{{ cvp_version }} --img rpm"
+            chdir: "{{ data_dir }}"
+            creates: cvp-rpm-installer-{{ cvp_version }}
+
+        - name: Check CVP download checksum
+          shell:
+            cmd: bash -c "if [ $(md5sum cvp-rpm-installer-{{ cvp_version }} |awk '{print $1}') != $(cat cvp-rpm-installer-{{ cvp_version }}.md5) ]; then echo Checksum does not match; exit 1; fi"
+            chdir: "{{ data_dir }}"
+      rescue:
+        - name: Remove broken download
+          file:
+            path: "{{ data_dir }}/cvp-rpm-installer-{{ cvp_version }}"
+            state: absent
+        - name: Run EOS downloader
+          shell:
+            cmd: "{{ data_dir }}/eos_download.py --api {{ api_token }} --ver cvp-{{ cvp_version }} --img rpm"
+            chdir: "{{ data_dir }}"
+            creates: cvp-rpm-installer-{{ cvp_version }}
+      any_errors_fatal: true
+
+    - name: Enable firewalld
+      service:
+        name: firewalld
+        enabled: yes
+        state: started
+
+    - name: Install CVP
+      block:
+        - name: Run Installer
+          shell:
+            cmd: bash {{ data_dir }}/cvp-rpm-installer-{{ cvp_version }} " " {{ cvp_size }}
+            chdir: "{{ data_dir }}"
+      rescue:
+        - name: Remove temporary directory
+          shell: rm -Rf /tmp/cvp.install.*

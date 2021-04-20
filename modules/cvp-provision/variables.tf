@@ -1,3 +1,14 @@
+variable "cvp_version" {
+  type = string
+}
+variable "cvp_download_token" {
+  type = string
+}
+variable "cvp_install_size" {
+  type    = string
+  default = null
+}
+
 variable "gcp_project_id" {}
 variable "gcp_region" {}
 variable "gcp_network" {}
