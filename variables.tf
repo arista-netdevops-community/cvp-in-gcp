@@ -44,10 +44,10 @@ variable "cvp_cluster_vm_type" {
 variable "cvp_cluster_centos_version" {
   description = "The Centos version used by CVP instances."
   type        = string
-  default     = "7.7"
+  default     = null
 
   validation {
-    condition     = var.cvp_cluster_centos_version != "7.6" || var.cvp_cluster_centos_version != "7.7"
+    condition     = var.cvp_cluster_centos_version != "7.6" || var.cvp_cluster_centos_version != "7.7" || var.cvp_cluster_centos_version != null
     error_message = "Currently supported Centos versions are 7.6 or 7.7."
   }
 }
