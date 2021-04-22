@@ -40,6 +40,10 @@ data "google_compute_instance" "cluster_node" {
   self_link = local.cluster_node_list[count.index]
 }
 
+data "google_compute_subnetwork" "cluster_node" {
+  self_link = data.google_compute_instance.cluster_node[0].network_interface.0.subnetwork
+}
+
 # TODO: Use proper user and key (needs fixing the image)
 resource "null_resource" "cluster_node" {
   count = var.vm_ssh_key != null ? length(data.google_compute_instance.cluster_node[*].network_interface.0.access_config.0.nat_ip) : 0
@@ -61,6 +65,6 @@ resource "null_resource" "cluster_node" {
   }
 
   provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ${data.google_compute_instance.cluster_node[count.index].network_interface.0.access_config.0.nat_ip}, -u ${var.vm_admin_user} --private-key ${var.vm_private_ssh_key_path} --extra-vars \"cvp_version=${var.cvp_version} api_token=${var.cvp_download_token} cvp_size=${local.cvp_suggested_size}\" ansible/cvp-provision.yaml"
+    command = "ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_KEEP_REMOTE_FILES=1 ansible-playbook -i ${data.google_compute_instance.cluster_node[count.index].network_interface.0.access_config.0.nat_ip}, -u ${var.vm_admin_user} --private-key ${var.vm_private_ssh_key_path} --extra-vars \"cvp_version=${var.cvp_version} api_token=${var.cvp_download_token} cvp_size=${local.cvp_suggested_size}\" ansible/cvp-provision.yaml"
   }
 }

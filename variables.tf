@@ -32,8 +32,8 @@ variable "cvp_cluster_size" {
   type        = number
 
   validation {
-    condition     = var.cvp_cluster_size == "1" || var.cvp_cluster_size == "3"
-    error_message = "The CVP cluster size must be 1 or 3 nodes."
+    condition     = var.cvp_cluster_size == "1" #|| var.cvp_cluster_size == "3"
+    error_message = "The CVP cluster size must be 1 or 3 nodes. **Support for 3-node clusters is disabled in this release**."
   }
 }
 variable "cvp_cluster_vm_type" {

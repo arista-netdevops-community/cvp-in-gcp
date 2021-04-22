@@ -7,7 +7,7 @@ Templates to launch fully-functional CVP clusters in GCP.
 * 2. [Requisites](#Requisites)
 	* 2.1. [terraform >= 0.13](#terraform0.13)
 	* 2.2. [gcloud client](#gcloudclient)
-* 3. [Running terraform](#Runningterraform)
+* 3. [Quickstart](#Quickstart)
 	* 3.1. [-target module.cvp_cluster](#targetmodule.cvp_cluster)
 	* 3.2. [Variables](#Variables)
 		* 3.2.1. [Mandatory](#Mandatory)
@@ -25,7 +25,7 @@ Templates to launch fully-functional CVP clusters in GCP.
 <!-- /vscode-markdown-toc -->
 
 ##  1. <a name='TLDR'></a>TLDR
-Install terraform, configure gcloud and use the `.tfvars` example.
+Install terraform, configure gcloud and use one of the provided `.tfvars` examples.
 
 > **_NOTE_**: If you get the `The "count" value depends on resource attributes that cannot be determined until apply, so Terraform cannot predict how many instances will be created.` error message, you didn't use the [-target module.cvp_cluster](#targetmodule.cvp_cluster) parameter.
 
@@ -38,29 +38,33 @@ Terraform is distributed as a single binary. Install Terraform by unzipping it a
 ###  2.2. <a name='gcloudclient'></a>gcloud client
 You must have the Google Cloud SDK installed and authenticated. For installation details please see [here][gcloud-install].
 
-We suggest that you create a profile and authenticate the cli using these steps:
+We suggest that you create a profile and authenticate the cli using these steps. Feel free to change `cvp-profile` to whatever profile name you prefer:
 
+### ansible
+
+1. Initialize your gcloud profile
 ```bash
 $ gcloud config configurations create cvp-profile
 $ gcloud config configurations activate cvp-profile
-$ gcloud init # Choose [1] Re-initialize this configuration [arista-cvp] with new settings
+$ gcloud init 
+```
+- Choose [1] Re-initialize this configuration [arista-cvp] with new settings
+- Select an existing project from the list or create a new project if desired. Clusters will be launched in this project.
+- Choose `Y` when asked whether to configure a default Compute Region and Zone
+- You can select any region. For the purposes of this guide we'll use option `8` (`us-central1-a`)
+
+
+2. Get API credentials for terraform
+```bash
 $ gcloud auth application-default login
 ```
 
-Feel free to change `cvp-profile` to whatever profile name you prefer.
-
-##  3. <a name='Runningterraform'></a>Quickstart
+##  3. <a name='Quickstart'></a>Quickstart
 These steps assume that you created a profile following the steps in the [gcloud client](#gcloudclient) section:
 - Activate the profile:
 
 ```bash
 $ gcloud config configurations activate cvp-profile
-```
-
-- Export the [name of the GCP project](terraform-no-project): 
-
-```bash
-$ export GOOGLE_PROJECT=your_project_name
 ```
 
 - Initialize terraform (only needed on the first run): 
@@ -108,7 +112,7 @@ Due to limitations in terraform we need to run it twice when creating the enviro
 The first run should use the parameter `-target module.cvp_cluster` so that only the cluster creation takes place, ignoring the provisioning part. Once the cluster is running the parameter shouldn't be used anymore, and subsequent runs will both adjust cluster settings and do all necessary provisioning steps.
 
 ###  3.2. <a name='Variables'></a>Variables
-Mandatory variables will be asked at runtime unless specified on the command line or using a [.tfvars file](terraform-tfvars)
+Mandatory variables will be asked at runtime unless specified on the command line or using a [.tfvars file](terraform-tfvars), which is recommended in most cases.
 
 ####  3.2.1. <a name='Mandatory'></a>Mandatory
 - **gcp_project_id**: The name of the GCP Project where all resources will be launched. May also be obtained from the `GOOGLE_PROJECT` environment variable.
@@ -150,10 +154,11 @@ $ terraform apply -var-file=examples/one-node-cvp-deployment.tfvars # subsequent
 - Data disks will **not** be removed when destroying the environment unless `cvp_cluster_remove_disks` is set to `true`. Make sure to remove them manually when they're no longer needed.
 
 ##  6. <a name='BugsandLimitations'></a>Bugs and Limitations
-- [Running the module without explicitely setting a project will fail][terraform-no-project].
+- **Only single-node clusters are supported for now**. Support for multi-node clusters will be added in future releases.
 - Resizing clusters is not supported at this time.
 - This module connects to the instance using the `root` user instead of the declared user for provisioning due to limitations in the base image that's being used. If you know your way around terraform and understand what you're doing, this behaviour can be changed by editing the `modules/cvp-provision/main.tf` file.
 - CVP installation size auto-discovery only works for custom instances at this time.
+
 
 [gcloud-install]: https://cloud.google.com/sdk/docs/install
 [terraform-download]: https://www.terraform.io/downloads.html

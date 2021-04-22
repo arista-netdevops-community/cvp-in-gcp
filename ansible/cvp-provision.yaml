@@ -3,6 +3,12 @@
   vars:
     data_dir: /data
     data_disk: sdx
+    cvp_size: ''
+    cv_wifi_ha_cluster_ip: ''
+    dns: '169.254.169.254'
+    node_name: node1
+    cvp_ntp: time.google.com
+    cvp_ingest_key: arista
 
   tasks:
     - name: Image cleanup
@@ -75,12 +81,14 @@
           shell:
             cmd: "{{ data_dir }}/eos_download.py --api {{ api_token }} --ver cvp-{{ cvp_version }} --img rpm"
             chdir: "{{ data_dir }}"
-            creates: cvp-rpm-installer-{{ cvp_version }}
+            creates: cvp-rpm-installer-{{ cvp_version }}.md5
+          register: cvp_downloaded
 
         - name: Check CVP download checksum
           shell:
             cmd: bash -c "if [ $(md5sum cvp-rpm-installer-{{ cvp_version }} |awk '{print $1}') != $(cat cvp-rpm-installer-{{ cvp_version }}.md5) ]; then echo Checksum does not match; exit 1; fi"
             chdir: "{{ data_dir }}"
+          when: cvp_downloaded.changed
       rescue:
         - name: Remove broken download
           file:
@@ -90,7 +98,7 @@
           shell:
             cmd: "{{ data_dir }}/eos_download.py --api {{ api_token }} --ver cvp-{{ cvp_version }} --img rpm"
             chdir: "{{ data_dir }}"
-            creates: cvp-rpm-installer-{{ cvp_version }}
+            creates: cvp-rpm-installer-{{ cvp_version }}.md5
       any_errors_fatal: true
 
     - name: Enable firewalld
@@ -101,10 +109,65 @@
 
     - name: Install CVP
       block:
-        - name: Run Installer
+        - name: Install CVP
           shell:
             cmd: bash {{ data_dir }}/cvp-rpm-installer-{{ cvp_version }} " " {{ cvp_size }}
             chdir: "{{ data_dir }}"
+            creates: /cvpi
       rescue:
         - name: Remove temporary directory
           shell: rm -Rf /tmp/cvp.install.*
+
+    # TODO: Support multiple interfaces
+    - name: Get variables
+      block:
+        - name: Get hostname
+          shell: hostname
+          register: cvp_hostname
+        - name: Get default route
+          shell: ip route show|grep ^default|awk '{print $3}'
+          register: cvp_default_route
+        - name: Get IP address
+          shell: hostname -i
+          register: cvp_ip
+        - name: Get DNS domain
+          shell: hostname -d
+          register: cvp_dns_domain
+        # - name: Set template facts
+        #   set_fact:
+        #     template_hostname: "{{ hostname.stdout }}"
+        #     template_default_route: "{{ default_route.stdout }}"
+        #     template_ip: "{{ ip.stdout }}"
+        #     cv_wifi_ha_cluster_ip: "{{ ip.stdout }}"
+        #- name: Get netmask
+
+    - name: Setup expect requirements
+      pip:
+        extra_args: --upgrade
+        name:
+          - pexpect
+
+    - name: Configure CVP
+      expect:
+        command: su - cvpadmin
+        echo: yes
+        timeout: 2700
+        responses:
+          '>':
+            - "s"
+            - "a"
+            - "q"
+          'dns:': "{{ dns }}"
+          'DNS domains:': "{{ cvp_dns_domain.stdout }}"
+          'ntp:': "{{ cvp_ntp }}"
+          'Telemetry Ingest Key:': "{{ cvp_ingest_key }}"
+          'CloudVision WiFi Enabled: no': "\n"
+          'Cluster Interface name: eth0': "\n"
+          'Device Interface name: eth0': "\n"
+          'hostname \(fqdn\):': "{{ cvp_hostname.stdout }}"
+          'default route:': "{{ cvp_default_route.stdout }}"
+          'Number of Static Routes:': "\n"
+          'TACACS server ip address:': "\n"
+          'IP address of eth0:': "\n"
+          'Netmask of eth0: 255.255.255.255': "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b255.255.255.0"
+          'yes/no:no': "\b\byes"
