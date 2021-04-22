@@ -106,6 +106,8 @@ $ terraform plan -out=plan.out -var-file=examples/one-node-cvp-deployment.tfvars
 terraform apply plan.out
 ```
 
+- Go and have a coffee or two. This takes around 20 minutes on a `custom-8-16384` instance.
+
 ###  3.1. <a name='targetmodule.cvp_cluster'></a>-target module.cvp_cluster
 Due to limitations in terraform we need to run it twice when creating the environment for the first time. This is due to the need of referencing instances that are created by the Instance Group Manager when provisioning the cluster, which can only be done after the environment is actually created.
 
