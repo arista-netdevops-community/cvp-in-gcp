@@ -124,13 +124,14 @@ Mandatory variables will be asked at runtime unless specified on the command lin
 ####  4.2. <a name='Optional'></a>Optional
 - **gcp_network**: The network in which clusters will be launched. Leaving this blank will create a new network.
 - **cvp_cluster_vmtype**: The type of instances used for CVP
+- **cvp_cluster_centos_version**: The Centos version used by CVP instances. If not provided we'll try to choose the appropriate one based on the CVP version that's being installed.
 - **cvp_cluster_public_management**: Whether the cluster UI and SSH ports (https/ssh) is publically accessible over the internet. Defaults to `false`.
 - **cvp_cluster_vm_admin_user**: Admin user to connect to instances in the CVP cluster using ssh. Should be used in conjunction with `cvp_cluster_vm_key`. Defaults to `cvpsshadmin`.
-- **cvp_cluster_vm_key**: Path to the public SSH key used to access instances in the CVP cluster using ssh as the `cvp_cluster_vm_admin_user` user.
-- **cvp_cluster_remove_disks**: Whether data disks created for the instances will be removed when destroying them. Defaults to `false`.
-- **cvp_cluster_vm_private_key**: Private SSH key used to access instances in the CVP cluster.
+- **cvp_cluster_vm_key**: Path to the public SSH key used to access instances in the CVP cluster using ssh as the `cvp_cluster_vm_admin_user` user. If not provided we'll use `~/.ssh/id_rsa.pub` by default.
+- **cvp_cluster_vm_private_key**: Private SSH key used to access and provision instances in the CVP cluster. If not provided we'll use `~/.ssh/id_rsa` by default. This should match the public key provided on the `cvp_cluster_vm_key` variable.
 - **cvp_cluster_vm_password**: Password used to access instances in the CVP cluster.
-- **cvp_version**: CVP version to install on the cluster.
+- **cvp_cluster_remove_disks**: Whether data disks created for the instances will be removed when destroying them. Defaults to `false`.
+- **cvp_version**: CVP version to install on the cluster. Defaults to `2020.3.1`.
 - **cvp_install_size**: CVP installation size. The module will try to guess the best installation size based on the vm size if not provided. Valid values are `demo`, `small`, `production` and `prod_wifi`.
 
 ##  5. <a name='Examples'></a>Examples

@@ -19,7 +19,7 @@ variable "gcp_zone" {
 
   validation {
     condition = length(var.gcp_zone) == 1 && can(regex("[a-zA-z]", var.gcp_zone))
-    error_message = "The zone should be a letter matching the regex [a-z]."
+    error_message = "The zone should be a letter matching the regex [a-zA-z]."
   }
 }
 
