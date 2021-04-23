@@ -4,13 +4,16 @@
     cv_wifi_ha_cluster_ip: ''
     cvp_cluster_interface: eth0
     cvp_device_interface: eth0
+    cvp_dns:
+      - '169.254.169.254'
     cvp_ingest_key: arista
     cvp_k8s_cluster_network: 10.42.0.0/16
-    cvp_ntp: time.google.com
+    cvp_netmask: '255.255.255.0'
+    cvp_ntp:
+      - time.google.com
     cvp_size: ''
     data_dir: /data
     data_disk: sdx
-    dns: '169.254.169.254'
     node_name: node1
 
   tasks:
