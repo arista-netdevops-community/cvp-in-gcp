@@ -2,7 +2,7 @@ common:
   aeris_ingest_key: arista
   cluster_interface: eth0
   cv_wifi_enabled: {% if cvp_size == 'prod_wifi' %}'yes'{% else %}'no'{% endif %} 
-  cv_wifi_ha_cluster_ip: {{ cv_wifi_ha_cluster_ip }}
+  cv_wifi_ha_cluster_ip: {{ template_wifi_ha_cluster_ip }}
   device_interface: eth0
   dns:
   - {{ dns }}

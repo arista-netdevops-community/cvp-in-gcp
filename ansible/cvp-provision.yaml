@@ -133,41 +133,95 @@
         - name: Get DNS domain
           shell: hostname -d
           register: cvp_dns_domain
-        # - name: Set template facts
-        #   set_fact:
-        #     template_hostname: "{{ hostname.stdout }}"
-        #     template_default_route: "{{ default_route.stdout }}"
-        #     template_ip: "{{ ip.stdout }}"
-        #     cv_wifi_ha_cluster_ip: "{{ ip.stdout }}"
+        - name: Set template facts
+          set_fact:
+            template_hostname: "{{ cvp_hostname.stdout }}"
+            template_default_route: "{{ cvp_default_route.stdout_lines.0 }}"
+            template_ip: "{{ cvp_ip.stdout }}"
+            template_wifi_ha_cluster_ip: "{{ cvp_ip.stdout }}"
         #- name: Get netmask
 
-    - name: Setup expect requirements
-      pip:
-        extra_args: --upgrade
-        name:
-          - pexpect
+    # - name: Setup expect requirements
+    #   pip:
+    #     extra_args: --upgrade
+    #     name:
+    #       - pexpect
+
+    # - name: Configure CVP 2020.3.1
+    #   expect:
+    #     command: su - cvpadmin
+    #     echo: yes
+    #     timeout: 2700
+    #     responses:
+    #       '>':
+    #         - "s"
+    #         - "a"
+    #         - "q"
+    #       'dns:': "{{ dns }}"
+    #       'DNS domains:': "{{ cvp_dns_domain.stdout }}"
+    #       'ntp:': "{{ cvp_ntp }}"
+    #       'Telemetry Ingest Key:': "{{ cvp_ingest_key }}"
+    #       'CloudVision WiFi Enabled: no': "\n"
+    #       'Cluster Interface name: eth0': "\n"
+    #       'Device Interface name: eth0': "\n"
+    #       'hostname \(fqdn\):': "{{ cvp_hostname.stdout }}"
+    #       'default route:': "{{ cvp_default_route.stdout }}"
+    #       'Number of Static Routes:': "\n"
+    #       'TACACS server ip address:': "\n"
+    #       'IP address of eth0:': "\n"
+    #       'Netmask of eth0: 255.255.255.255': "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b255.255.255.0"
+    #       'yes/no:no': "\b\byes"
+
+    - name: Create configuration template
+      template:
+        src: cvp-config.jinja2
+        dest: "{{ data_dir }}/.cvp-ansible-config.yaml"
+      register: config_template
 
     - name: Configure CVP
-      expect:
-        command: su - cvpadmin
-        echo: yes
-        timeout: 2700
-        responses:
-          '>':
-            - "s"
-            - "a"
-            - "q"
-          'dns:': "{{ dns }}"
-          'DNS domains:': "{{ cvp_dns_domain.stdout }}"
-          'ntp:': "{{ cvp_ntp }}"
-          'Telemetry Ingest Key:': "{{ cvp_ingest_key }}"
-          'CloudVision WiFi Enabled: no': "\n"
-          'Cluster Interface name: eth0': "\n"
-          'Device Interface name: eth0': "\n"
-          'hostname \(fqdn\):': "{{ cvp_hostname.stdout }}"
-          'default route:': "{{ cvp_default_route.stdout }}"
-          'Number of Static Routes:': "\n"
-          'TACACS server ip address:': "\n"
-          'IP address of eth0:': "\n"
-          'Netmask of eth0: 255.255.255.255': "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b255.255.255.0"
-          'yes/no:no': "\b\byes"
+      block:
+        - name: Apply configuration template
+          shell:
+            cmd: python /cvpi/tools/cvpConfig.py -y {{ data_dir }}/.cvp-ansible-config.yaml -n {{ node_name }}
+          when: config_template.changed
+
+        - name: Start Zookeeper
+          service:
+            name: zookeeper
+            enabled: yes
+            state: started
+
+        - name: Start docker
+          service:
+            name: docker
+            enabled: yes
+            state: started
+
+        - name: Configure all services
+          shell:
+            cmd: cvpi config all
+          become: true
+          become_user: cvp
+          become_method: su
+          become_flags: '-s /bin/bash'
+          when: config_template.changed
+
+    - name: Start CVP
+      block:
+        - name: Start cvpi-check
+          service:
+            name: cvpi-check
+            enabled: yes
+            state: started
+
+        - name: Start cvpi
+          service:
+            name: cvpi
+            enabled: yes
+            state: started
+
+        - name: Start cvpi-watchdog
+          service:
+            name: cvpi-watchdog.timer
+            enabled: yes
+            state: started
