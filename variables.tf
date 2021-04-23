@@ -52,7 +52,12 @@ variable "cvp_cluster_centos_version" {
   }
 }
 variable "cvp_cluster_public_management" {
-  description = "Whether the cluster management interface (https/ssh) is publically accessible over the internet"
+  description = "Whether the cluster management interface (https/ssh) is publically accessible over the internet."
+  type        = bool
+  default     = false
+}
+variable "cvp_cluster_public_eos_communitation" {
+  description = "Whether the ports used by EOS devices to communicate to CVP are publically accessible over the internet."
   type        = bool
   default     = false
 }
@@ -104,4 +109,14 @@ variable "cvp_install_size" {
     condition = var.cvp_install_size == "demo" || var.cvp_install_size == "small" || var.cvp_install_size == "production" || var.cvp_install_size == "prod_wifi" || var.cvp_install_size == null
     error_message = "CVP install size must be one of 'demo', 'small', 'production' or 'prod_wifi'."
   }
+}
+variable "cvp_enable_advanced_login_options" {
+  description = "Whether to enable advanced login options on CVP."
+  type        = bool
+  default     = false
+}
+variable "eos_ip_range" {
+  description = "IP ranges used by EOS devices that will be managed by the CVP cluster."
+  type        = list
+  default     = []
 }

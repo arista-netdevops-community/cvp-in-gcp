@@ -46,3 +46,11 @@ variable "vm_remove_data_disk" {
   type    = bool
   default = false
 }
+variable "cluster_public_eos_communication" {
+  type    = bool
+  default = false
+}
+variable "eos_ip_range" {
+  type    = list
+  default = []
+}

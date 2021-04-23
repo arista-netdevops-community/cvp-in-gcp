@@ -1,3 +1,7 @@
+locals {
+  eos_range = var.cluster_public_eos_communication == true ? ["0.0.0.0/0"] : var.eos_ip_range
+}
+
 provider "google" {
   region = var.gcp_region
 }
@@ -301,10 +305,11 @@ resource "google_compute_instance_group_manager" "cvp_nodes" {
 }
 
 resource "google_compute_firewall" "cvp_management" {
-  count   = var.cluster_public_management == true ? 1 : 0
-  name    = "fw-cvp-${var.cluster_name}-mgmt"
-  project = data.google_project.project.project_id
-  network = var.gcp_network
+  count       = var.cluster_public_management == true ? 1 : 0
+  name        = "fw-cvp-${var.cluster_name}-mgmt"
+  project     = data.google_project.project.project_id
+  network     = var.gcp_network
+  description = "Allow users to access CVP management interfaces."
 
   allow {
     protocol = "tcp"
@@ -312,5 +317,48 @@ resource "google_compute_firewall" "cvp_management" {
   }
 
   source_ranges = [ "0.0.0.0/0" ]
+  target_tags   = [ "arista-cvp-server" ]
+}
+
+resource "google_compute_firewall" "cvp_eos-cvp" {
+  name        = "fw-cvp-${var.cluster_name}-eos-cvp"
+  project     = data.google_project.project.project_id
+  network     = var.gcp_network
+  description = "Allow EOS->CVP communication"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80", "443", "9910"]
+  }
+
+  source_ranges = local.eos_range
+  target_tags   = [ "arista-cvp-server" ]
+}
+
+resource "google_compute_firewall" "cvp_cvp-cvp" {
+  name        = "fw-cvp-${var.cluster_name}-cvp-cvp"
+  project     = data.google_project.project.project_id
+  network     = var.gcp_network
+  description = "Allow CVP-CVP cluster communication"
+
+  # Hadoop
+  allow {
+    protocol = "tcp"
+    ports    = ["8020", "8485", "9001", "50010", "50020", "50070", "50075", "50090"]
+  }
+
+  # Hbase
+  allow {
+    protocol = "tcp"
+    ports    = ["60000", "60010", "60020", "60030"]
+  }
+
+  # Zookeeper
+  allow {
+    protocol = "tcp"
+    ports    = ["2181", "2888", "2889", "2890", "3888", "3889", "3890"]
+  }
+
+  source_tags   = [ "arista-cvp-server" ]
   target_tags   = [ "arista-cvp-server" ]
 }

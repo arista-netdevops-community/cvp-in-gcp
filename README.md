@@ -126,6 +126,7 @@ Mandatory variables will be asked at runtime unless specified on the command lin
 - **cvp_cluster_vmtype**: The type of instances used for CVP
 - **cvp_cluster_centos_version**: The Centos version used by CVP instances. If not provided we'll try to choose the appropriate one based on the CVP version that's being installed.
 - **cvp_cluster_public_management**: Whether the cluster UI and SSH ports (https/ssh) is publically accessible over the internet. Defaults to `false`.
+- **cvp_cluster_public_eos_communitation**: Whether the ports used by EOS devices to communicate to CVP are publically accessible over the internet. Defaults to `false`.
 - **cvp_cluster_vm_admin_user**: Admin user to connect to instances in the CVP cluster using ssh. Should be used in conjunction with `cvp_cluster_vm_key`. Defaults to `cvpsshadmin`.
 - **cvp_cluster_vm_key**: Path to the public SSH key used to access instances in the CVP cluster using ssh as the `cvp_cluster_vm_admin_user` user. If not provided we'll use `~/.ssh/id_rsa.pub` by default.
 - **cvp_cluster_vm_private_key**: Private SSH key used to access and provision instances in the CVP cluster. If not provided we'll use `~/.ssh/id_rsa` by default. This should match the public key provided on the `cvp_cluster_vm_key` variable.
@@ -133,6 +134,8 @@ Mandatory variables will be asked at runtime unless specified on the command lin
 - **cvp_cluster_remove_disks**: Whether data disks created for the instances will be removed when destroying them. Defaults to `false`.
 - **cvp_version**: CVP version to install on the cluster. Defaults to `2020.3.1`.
 - **cvp_install_size**: CVP installation size. The module will try to guess the best installation size based on the vm size if not provided. Valid values are `demo`, `small`, `production` and `prod_wifi`.
+- **cvp_enable_advanced_login_options**: Whether to enable advanced login options on CVP. This is needed if you're planning to manage devices that are not reachable from the CVP network. Defaults to `false`.
+- **eos_ip_range**: List of IP ranges used by EOS devices that will be managed by the CVP cluster. Should be set when `cvp_cluster_public_eos_communitation` is set to `false`, otherwise devices won't be able to communicate and stream to CVP.
 
 ##  5. <a name='Examples'></a>Examples
 ###  5.1. <a name='Usingcommand-linevariables:'></a>Using command-line variables:

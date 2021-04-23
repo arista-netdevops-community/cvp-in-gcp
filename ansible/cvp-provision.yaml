@@ -6,6 +6,7 @@
     cvp_device_interface: eth0
     cvp_dns:
       - '169.254.169.254'
+    cvp_enable_advanced_login_options: "false"
     cvp_ingest_key: arista
     cvp_k8s_cluster_network: 10.42.0.0/16
     cvp_netmask: '255.255.255.0'
@@ -199,3 +200,7 @@
             name: cvpi-watchdog.timer
             enabled: yes
             state: started
+
+    - name: Enable advanced login options
+      shell: /cvpi/tools/apish publish -d cvp -p /aaa/device/settings --update '{"key":"singleSignOnEnabled","value":true}'
+      when: cvp_enable_advanced_login_options == "true"
