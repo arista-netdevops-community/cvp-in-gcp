@@ -138,8 +138,8 @@ Mandatory variables will be asked at runtime unless specified on the command lin
 ###  5.1. <a name='Usingcommand-linevariables:'></a>Using command-line variables:
 
 ```bash
-$ terraform apply -var gcp_project_id=myproject -var cvp_cluster_name=mycluster -var cvp_cluster_size=1 -var gcp_region=us-central1 -var gcp_zone=a -target module.cvp_cluster # first apply only
-$ terraform apply -var gcp_project_id=myproject -var cvp_cluster_name=mycluster -var cvp_cluster_size=1 -var gcp_region=us-central1 -var gcp_zone=a # subsequent applies
+$ terraform apply -var gcp_project_id=myproject -var gcp_region=us-central1 -var gcp_zone=a -var cvp_cluster_name=my-cvp-cluster -var cvp_cluster_size=1 -var cvp_cluster_public_management=true -var cvp_cluster_vm_key="~/.ssh/id_rsa.pub" -var cvp_cluster_vm_private_key="~/.ssh/id_rsa" -var cvp_download_token="PLACE_YOUR_PORTAL_TOKEN_HERE" -target module.cvp_cluster # first apply only
+$ terraform apply -var gcp_project_id=myproject -var gcp_region=us-central1 -var gcp_zone=a -var cvp_cluster_name=my-cvp-cluster -var cvp_cluster_size=1 -var cvp_cluster_public_management=true -var cvp_cluster_vm_key="~/.ssh/id_rsa.pub" -var cvp_cluster_vm_private_key="~/.ssh/id_rsa" -var cvp_download_token="PLACE_YOUR_PORTAL_TOKEN_HERE" # subsequent applies
 ```
 
 ###  5.2. <a name='Usinga.tfvarsfile'></a>Using a `.tfvars` file
