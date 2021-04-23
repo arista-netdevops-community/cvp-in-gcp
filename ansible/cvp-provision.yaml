@@ -1,14 +1,17 @@
 - hosts: all
   become: yes
   vars:
+    cv_wifi_ha_cluster_ip: ''
+    cvp_cluster_interface: eth0
+    cvp_device_interface: eth0
+    cvp_ingest_key: arista
+    cvp_k8s_cluster_network: 10.42.0.0/16
+    cvp_ntp: time.google.com
+    cvp_size: ''
     data_dir: /data
     data_disk: sdx
-    cvp_size: ''
-    cv_wifi_ha_cluster_ip: ''
     dns: '169.254.169.254'
     node_name: node1
-    cvp_ntp: time.google.com
-    cvp_ingest_key: arista
 
   tasks:
     - name: Image cleanup
@@ -139,38 +142,6 @@
             template_default_route: "{{ cvp_default_route.stdout_lines.0 }}"
             template_ip: "{{ cvp_ip.stdout }}"
             template_wifi_ha_cluster_ip: "{{ cvp_ip.stdout }}"
-        #- name: Get netmask
-
-    # - name: Setup expect requirements
-    #   pip:
-    #     extra_args: --upgrade
-    #     name:
-    #       - pexpect
-
-    # - name: Configure CVP 2020.3.1
-    #   expect:
-    #     command: su - cvpadmin
-    #     echo: yes
-    #     timeout: 2700
-    #     responses:
-    #       '>':
-    #         - "s"
-    #         - "a"
-    #         - "q"
-    #       'dns:': "{{ dns }}"
-    #       'DNS domains:': "{{ cvp_dns_domain.stdout }}"
-    #       'ntp:': "{{ cvp_ntp }}"
-    #       'Telemetry Ingest Key:': "{{ cvp_ingest_key }}"
-    #       'CloudVision WiFi Enabled: no': "\n"
-    #       'Cluster Interface name: eth0': "\n"
-    #       'Device Interface name: eth0': "\n"
-    #       'hostname \(fqdn\):': "{{ cvp_hostname.stdout }}"
-    #       'default route:': "{{ cvp_default_route.stdout }}"
-    #       'Number of Static Routes:': "\n"
-    #       'TACACS server ip address:': "\n"
-    #       'IP address of eth0:': "\n"
-    #       'Netmask of eth0: 255.255.255.255': "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b255.255.255.0"
-    #       'yes/no:no': "\b\byes"
 
     - name: Create configuration template
       template:

@@ -1,9 +1,12 @@
+{% set cvp_major_version = cvp_version.split('.').0 | int %}
+{% set cvp_minor_version = cvp_version.split('.').1 | int %}
 common:
-  aeris_ingest_key: arista
-  cluster_interface: eth0
-  cv_wifi_enabled: {% if cvp_size == 'prod_wifi' %}'yes'{% else %}'no'{% endif %} 
+  aeris_ingest_key: {{ cvp_ingest_key }}
+  cluster_interface: {{ cvp_cluster_interface }}
+  cv_wifi_enabled: {% if cvp_size == 'prod_wifi' %}'yes'{{"\n"}}{% else %}'no'{{"\n"}}{% endif %}
   cv_wifi_ha_cluster_ip: {{ template_wifi_ha_cluster_ip }}
-  device_interface: eth0
+  device_interface: {{ cvp_device_interface }}
+{% if cvp_major_version >= 2021 %}  kube_cluster_network: {{ cvp_k8s_cluster_network }}{{"\n"}}{% endif %}
   dns:
   - {{ dns }}
   ntp:
