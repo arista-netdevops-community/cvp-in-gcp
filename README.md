@@ -143,7 +143,7 @@ $ terraform apply -var gcp_project_id=myproject -var gcp_region=us-central1 -var
 ```
 
 ###  5.2. <a name='Usinga.tfvarsfile'></a>Using a `.tfvars` file
-**Note**: Before running this please replace the `gcp_project_id` variable in the provided example file with the correct name of your project.
+**Note**: Before running this please replace the `gcp_project_id` variable in the provided example file with the correct name of your project and `cvp_download_token` with your Arista Portal token.
 
 ```bash
 $ terraform apply -var-file=examples/one-node-cvp-deployment.tfvars -target module.cvp_cluster # first apply only
