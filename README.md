@@ -13,9 +13,8 @@ Templates to launch fully functional CVP clusters in GCP.
 		* 4.1. [Mandatory](#Mandatory)
 		* 4.2. [Optional](#Optional)
 * 5. [Examples](#Examples)
-	* 5.1. [Using the Docker image](#UsingtheDockerimage)
-	* 5.2. [Using a `.tfvars` file](#Usinga.tfvarsfile)
-	* 5.3. [Using command-line variables:](#Usingcommand-linevariables:)
+	* 5.1. [Using a `.tfvars` file](#Usinga.tfvarsfile)
+	* 5.2. [Using command-line variables:](#Usingcommand-linevariables:)
 * 6. [Removing the environment](#Removingtheenvironment)
 * 7. [Other Notes](#OtherNotes)
 * 8. [Bugs and Limitations](#BugsandLimitations)
@@ -140,7 +139,7 @@ Mandatory variables are asked at runtime unless specified on the command line or
 - **eos_ip_range**: List of IP ranges used by EOS devices that will be managed by the CVP cluster. Should be set when `cvp_cluster_public_eos_communitation` is set to `false`, otherwise devices won't be able to communicate and stream to CVP.
 
 ##  5. <a name='Examples'></a>Examples
-###  5.1. <a name='UsingtheDockerimage'></a>Using the Docker image
+<!-- ###  5.1. <a name='UsingtheDockerimage'></a>Using the Docker image
 The docker image contains all dependencies pre-installed. It uses the same general syntax as the `.tfvars` method:
 
 ```bash
@@ -153,8 +152,9 @@ Some directories can be mounted if you wish to use pre-existing configuration:
 - **-v $HOME/.config/gcloud:/cvp/.gcloud**: Path to an existing gcloud configuration
 
 If those directories are not mounted new configurations will be generated.
+-->
 
-###  5.2. <a name='Usinga.tfvarsfile'></a>Using a `.tfvars` file
+###  5.1. <a name='Usinga.tfvarsfile'></a>Using a `.tfvars` file
 **Note**: Before running this please replace the `gcp_project_id` variable in the provided example file with the correct name of your project and `cvp_download_token` with your Arista Portal token.
 
 ```bash
@@ -162,7 +162,7 @@ $ terraform apply -var-file=examples/one-node-cvp-deployment.tfvars -target modu
 $ terraform apply -var-file=examples/one-node-cvp-deployment.tfvars # subsequent applies
 ```
 
-###  5.3. <a name='Usingcommand-linevariables:'></a>Using command-line variables:
+###  5.2. <a name='Usingcommand-linevariables:'></a>Using command-line variables:
 
 ```bash
 $ terraform apply -var gcp_project_id=myproject -var gcp_region=us-central1 -var gcp_zone=a -var cvp_cluster_name=my-cvp-cluster -var cvp_cluster_size=1 -var cvp_cluster_public_management=true -var cvp_cluster_vm_key="~/.ssh/id_rsa.pub" -var cvp_cluster_vm_private_key="~/.ssh/id_rsa" -var cvp_download_token="PLACE_YOUR_PORTAL_TOKEN_HERE" -target module.cvp_cluster # first apply only
