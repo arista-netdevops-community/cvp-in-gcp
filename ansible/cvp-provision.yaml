@@ -12,6 +12,7 @@
     cvp_netmask: '255.255.255.0'
     cvp_ntp:
       - time.google.com
+    cvp_public_ip: ''
     cvp_size: ''
     data_dir: /data
     data_disk: sdx

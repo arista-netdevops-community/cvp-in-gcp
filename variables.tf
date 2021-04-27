@@ -115,6 +115,11 @@ variable "cvp_enable_advanced_login_options" {
   type        = bool
   default     = false
 }
+variable "cvp_ingest_key" {
+  description = "Key that will be used to authenticate devices to CVP."
+  type        = string
+  default     = null
+}
 variable "eos_ip_range" {
   description = "IP ranges used by EOS devices that will be managed by the CVP cluster."
   type        = list

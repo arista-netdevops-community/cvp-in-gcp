@@ -135,6 +135,7 @@ Mandatory variables will be asked at runtime unless specified on the command lin
 - **cvp_version**: CVP version to install on the cluster. Defaults to `2020.3.1`.
 - **cvp_install_size**: CVP installation size. The module will try to guess the best installation size based on the vm size if not provided. Valid values are `demo`, `small`, `production` and `prod_wifi`.
 - **cvp_enable_advanced_login_options**: Whether to enable advanced login options on CVP. This is needed if you're planning to manage devices that are not reachable from the CVP network. Defaults to `false`.
+- **cvp_ingest_key**: Key that will be used to authenticate devices to CVP. Generates a random key by default.
 - **eos_ip_range**: List of IP ranges used by EOS devices that will be managed by the CVP cluster. Should be set when `cvp_cluster_public_eos_communitation` is set to `false`, otherwise devices won't be able to communicate and stream to CVP.
 
 ##  5. <a name='Examples'></a>Examples

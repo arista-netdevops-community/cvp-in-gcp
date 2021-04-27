@@ -10,6 +10,11 @@ data "google_project" "project" {
   project_id = var.gcp_project_id
 }
 
+resource "random_string" "cvp_ingest_key" {
+  length  = 16
+  special = false
+}
+
 locals {
   centos = {
     version  = var.cvp_cluster_centos_version != null ? var.cvp_cluster_centos_version : (
@@ -28,6 +33,7 @@ locals {
     }
     zone = lower("${var.gcp_region}-${var.gcp_zone}")
   }
+  cvp_ingest_key = var.cvp_ingest_key != null ? var.cvp_ingest_key : random_string.cvp_ingest_key.result
 }
 
 # TODO: support auto_create_subnetworks=false
@@ -75,4 +81,5 @@ module "cvp_provision_nodes" {
   cvp_download_token                = var.cvp_download_token
   cvp_install_size                  = var.cvp_install_size != null ? var.cvp_install_size : null
   cvp_enable_advanced_login_options = var.cvp_enable_advanced_login_options
+  cvp_ingest_key                    = local.cvp_ingest_key
 }

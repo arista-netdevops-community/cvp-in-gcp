@@ -65,6 +65,14 @@ resource "null_resource" "cluster_node" {
   }
 
   provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_KEEP_REMOTE_FILES=1 ansible-playbook -i ${data.google_compute_instance.cluster_node[count.index].network_interface.0.access_config.0.nat_ip}, -u ${var.vm_admin_user} --private-key ${var.vm_private_ssh_key_path} --extra-vars \"cvp_version=${var.cvp_version} api_token=${var.cvp_download_token} cvp_size=${local.cvp_suggested_size} cvp_netmask=${cidrnetmask(data.google_compute_subnetwork.cluster_node.ip_cidr_range)} cvp_enable_advanced_login_options=${var.cvp_enable_advanced_login_options} node_name=node${(count.index+1)}\" ansible/cvp-provision.yaml"
+    command = "ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_KEEP_REMOTE_FILES=1 ansible-playbook -i ${data.google_compute_instance.cluster_node[count.index].network_interface.0.access_config.0.nat_ip}, -u ${var.vm_admin_user} --private-key ${var.vm_private_ssh_key_path} --extra-vars \"cvp_version=${var.cvp_version} api_token=${var.cvp_download_token} cvp_size=${local.cvp_suggested_size} cvp_netmask=${cidrnetmask(data.google_compute_subnetwork.cluster_node.ip_cidr_range)} cvp_enable_advanced_login_options=${var.cvp_enable_advanced_login_options} node_name=node${(count.index+1)} cvp_ingest_key=${var.cvp_ingest_key}\" ansible/cvp-provision.yaml"
   }
+}
+
+data "external" "cvp_token" {
+  program = [ "ssh", "${var.vm_admin_user}@${data.google_compute_instance.cluster_node[0].network_interface.0.access_config.0.nat_ip}", "curl -sd '{\"reenrollDevices\":[\"*\"]}' -k https://127.0.0.1:9911/cert/createtoken" ]
+
+  depends_on = [
+    null_resource.cluster_node
+  ]
 }

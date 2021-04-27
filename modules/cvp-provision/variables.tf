@@ -12,6 +12,9 @@ variable "cvp_enable_advanced_login_options" {
   type    = bool
   default = false
 }
+variable "cvp_ingest_key" {
+  type    = string
+}
 variable "gcp_project_id" {}
 variable "gcp_region" {}
 variable "gcp_network" {}
