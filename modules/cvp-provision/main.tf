@@ -57,7 +57,7 @@ resource "null_resource" "cluster_node" {
 
     connection {
       host        = data.google_compute_instance.cluster_node[count.index].network_interface.0.access_config.0.nat_ip
-      type        = "ssh"
+      #type        = "ssh"
       user        = "root" #var.vm_admin_user
       #private_key = var.vm_private_ssh_key
       password    = "arastra"
@@ -69,10 +69,10 @@ resource "null_resource" "cluster_node" {
   }
 }
 
-data "external" "cvp_token" {
-  program = [ "ssh", "${var.vm_admin_user}@${data.google_compute_instance.cluster_node[0].network_interface.0.access_config.0.nat_ip}", "curl -sd '{\"reenrollDevices\":[\"*\"]}' -k https://127.0.0.1:9911/cert/createtoken" ]
+# data "external" "cvp_token" {
+#   program = [ "ssh", "${var.vm_admin_user}@${data.google_compute_instance.cluster_node[0].network_interface.0.access_config.0.nat_ip}", "curl -sd '{\"reenrollDevices\":[\"*\"]}' -k https://127.0.0.1:9911/cert/createtoken" ]
 
-  depends_on = [
-    null_resource.cluster_node
-  ]
-}
+#   depends_on = [
+#     null_resource.cluster_node
+#   ]
+# }
