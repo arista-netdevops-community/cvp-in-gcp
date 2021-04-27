@@ -1,3 +1,5 @@
+.gcloud
+.ssh
 .terraform
 .terraform.lock.hcl
 *.tfstate*

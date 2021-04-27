@@ -1,3 +1,4 @@
+# TODO: Support remote states
 terraform {
   required_version = ">= 0.13"
 }
@@ -43,8 +44,7 @@ resource "google_compute_network" "vpc_network" {
   project = var.gcp_project_id != null ? var.gcp_project_id : data.google_project.project.project_id
 }
 
-# TODO:
-#   - Support instances in multiple zones
+# TODO: Support instances in multiple zones
 module "cvp_cluster" {
   source = "./modules/cvp-cluster"
   

@@ -1,6 +1,6 @@
 # cvp-in-gcp
 
-Templates to launch fully-functional CVP clusters in GCP.
+Templates to launch fully functional CVP clusters in GCP.
 
 <!-- vscode-markdown-toc -->
 * 1. [TLDR](#TLDR)
@@ -13,8 +13,9 @@ Templates to launch fully-functional CVP clusters in GCP.
 		* 4.1. [Mandatory](#Mandatory)
 		* 4.2. [Optional](#Optional)
 * 5. [Examples](#Examples)
-	* 5.1. [Using command-line variables:](#Usingcommand-linevariables:)
+	* 5.1. [Using the Docker image](#UsingtheDockerimage)
 	* 5.2. [Using a `.tfvars` file](#Usinga.tfvarsfile)
+	* 5.3. [Using command-line variables:](#Usingcommand-linevariables:)
 * 6. [Removing the environment](#Removingtheenvironment)
 * 7. [Other Notes](#OtherNotes)
 * 8. [Bugs and Limitations](#BugsandLimitations)
@@ -111,7 +112,7 @@ terraform apply plan.out
 - Go have a coffee. At this point CVP should be starting in your instance and may take some time to finish bringing all services up. You can ssh into your cvp instances with the displayed `cvp_cluster_ssh_user` and `cvp_cluster_nodes_ips` to check progress.
 
 ##  4. <a name='Variables'></a>Variables
-Mandatory variables will be asked at runtime unless specified on the command line or using a [.tfvars file](terraform-tfvars), which is recommended in most cases.
+Mandatory variables are asked at runtime unless specified on the command line or using a [.tfvars file](terraform-tfvars), recommended in most cases.
 
 ####  4.1. <a name='Mandatory'></a>Mandatory
 - **gcp_project_id**: The name of the GCP Project where all resources will be launched. May also be obtained from the `GOOGLE_PROJECT` environment variable.
@@ -139,12 +140,19 @@ Mandatory variables will be asked at runtime unless specified on the command lin
 - **eos_ip_range**: List of IP ranges used by EOS devices that will be managed by the CVP cluster. Should be set when `cvp_cluster_public_eos_communitation` is set to `false`, otherwise devices won't be able to communicate and stream to CVP.
 
 ##  5. <a name='Examples'></a>Examples
-###  5.1. <a name='Usingcommand-linevariables:'></a>Using command-line variables:
+###  5.1. <a name='UsingtheDockerimage'></a>Using the Docker image
+The docker image contains all dependencies pre-installed. It uses the same general syntax as the `.tfvars` method:
 
 ```bash
-$ terraform apply -var gcp_project_id=myproject -var gcp_region=us-central1 -var gcp_zone=a -var cvp_cluster_name=my-cvp-cluster -var cvp_cluster_size=1 -var cvp_cluster_public_management=true -var cvp_cluster_vm_key="~/.ssh/id_rsa.pub" -var cvp_cluster_vm_private_key="~/.ssh/id_rsa" -var cvp_download_token="PLACE_YOUR_PORTAL_TOKEN_HERE" -target module.cvp_cluster # first apply only
-$ terraform apply -var gcp_project_id=myproject -var gcp_region=us-central1 -var gcp_zone=a -var cvp_cluster_name=my-cvp-cluster -var cvp_cluster_size=1 -var cvp_cluster_public_management=true -var cvp_cluster_vm_key="~/.ssh/id_rsa.pub" -var cvp_cluster_vm_private_key="~/.ssh/id_rsa" -var cvp_download_token="PLACE_YOUR_PORTAL_TOKEN_HERE" # subsequent applies
+$ docker run --rm -ti -v $HOME/.ssh:/cvp/.ssh -v $(pwd):/cvp test apply -var-file=examples/one-node-cvp-deployment.tfvars -target module.cvp_cluster # first apply only
+$ docker run --rm -ti -v $HOME/.ssh:/cvp/.ssh -v $(pwd):/cvp test apply -var-file=examples/one-node-cvp-deployment.tfvars # subsequent applies
 ```
+
+Some directories can be mounted if you wish to use pre-existing configuration:
+- **-v $HOME/.ssh:/cvp/.ssh**: Path to existing SSH keys.
+- **-v $HOME/.config/gcloud:/cvp/.gcloud**: Path to an existing gcloud configuration
+
+If those directories are not mounted new configurations will be generated.
 
 ###  5.2. <a name='Usinga.tfvarsfile'></a>Using a `.tfvars` file
 **Note**: Before running this please replace the `gcp_project_id` variable in the provided example file with the correct name of your project and `cvp_download_token` with your Arista Portal token.
@@ -154,6 +162,13 @@ $ terraform apply -var-file=examples/one-node-cvp-deployment.tfvars -target modu
 $ terraform apply -var-file=examples/one-node-cvp-deployment.tfvars # subsequent applies
 ```
 
+###  5.3. <a name='Usingcommand-linevariables:'></a>Using command-line variables:
+
+```bash
+$ terraform apply -var gcp_project_id=myproject -var gcp_region=us-central1 -var gcp_zone=a -var cvp_cluster_name=my-cvp-cluster -var cvp_cluster_size=1 -var cvp_cluster_public_management=true -var cvp_cluster_vm_key="~/.ssh/id_rsa.pub" -var cvp_cluster_vm_private_key="~/.ssh/id_rsa" -var cvp_download_token="PLACE_YOUR_PORTAL_TOKEN_HERE" -target module.cvp_cluster # first apply only
+$ terraform apply -var gcp_project_id=myproject -var gcp_region=us-central1 -var gcp_zone=a -var cvp_cluster_name=my-cvp-cluster -var cvp_cluster_size=1 -var cvp_cluster_public_management=true -var cvp_cluster_vm_key="~/.ssh/id_rsa.pub" -var cvp_cluster_vm_private_key="~/.ssh/id_rsa" -var cvp_download_token="PLACE_YOUR_PORTAL_TOKEN_HERE" # subsequent applies
+```
+
 ##  6. <a name='Removingtheenvironment'></a>Removing the environment
 In order to remove the environment you launched you can run the following command:
 
@@ -161,7 +176,7 @@ In order to remove the environment you launched you can run the following comman
 $ terraform destroy -var-file=examples/one-node-cvp-deployment.tfvars
 ```
 
-This will remove everything except data disks (and networks when using pre-existing ones) from the GCP project. Please read [other notes](#OtherNotes) below for more info.
+This command removes everything except data disks (and networks when using pre-existing ones) from the GCP project. Please read [other notes](#OtherNotes) below for more info.
 
 ##  7. <a name='OtherNotes'></a>Other Notes
 - **Data disks**: Data disks will **not** be removed when destroying the environment unless `cvp_cluster_remove_disks` is set to `true`. Make sure to remove them manually when they're no longer needed.
