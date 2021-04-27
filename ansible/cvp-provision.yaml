@@ -202,6 +202,9 @@
             enabled: yes
             state: started
 
+    - name: Wait for CVP startup
+      shell: while ! /cvpi/bin/cvpi status all; do echo still starting; done
+
     - name: Enable advanced login options
       shell: /cvpi/tools/apish publish -d cvp -p /aaa/device/settings --update '{"key":"singleSignOnEnabled","value":true}'
       when: cvp_enable_advanced_login_options == "true"
