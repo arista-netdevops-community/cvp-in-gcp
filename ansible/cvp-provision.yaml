@@ -24,6 +24,7 @@
         path: /etc/sysconfig/network-scripts/ifcfg-ens3
         state: absent
 
+    # TODO: Only resize when required
     - name: Resize root partition
       shell:
         cmd: bash -c "echo -e \"p\nd\n2\nn\np\n2\n\n\np\nw\nq\n\"|fdisk /dev/sda" || true
