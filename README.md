@@ -37,7 +37,7 @@ This module should work with any terraform version above 0.13. You can [download
 Terraform is distributed as a single binary. Install Terraform by unzipping it and moving it to a directory included in your system's `PATH`.
 
 ###  2.2. <a name='gcloudclient'></a>gcloud client
-You must have the Google Cloud SDK installed and authenticated. For installation details please see [here][gcloud-install].
+You must have the Google Cloud SDK installed and authenticated. For installation details please see [here][gcloud-install]. If asked `Optional. Use the install script to add Cloud SDK tools to your PATH` reply `Yes`
 
 We suggest that you create a profile and authenticate the cli using these steps. Feel free to change `cvp-profile` to whatever profile name you prefer:
 
@@ -48,7 +48,7 @@ $ gcloud config configurations activate cvp-profile
 $ gcloud init 
 ```
 - Choose [1] Re-initialize this configuration [arista-cvp] with new settings
-- Select an existing project from the list or create a new project if desired. Clusters will be launched in this project.
+- Select an existing project from the list or create a new project if desired. Clusters will be launched in this project. If you're trying to create a project and receives an error saying `No permission to create project in organization` you'll need to check your permissions with your cloud administrator or use an existing project.
 - Choose `Y` when asked whether to configure a default Compute Region and Zone
 - You can select any region. For the purposes of this guide we'll use option `8` (`us-central1-a`)
 
@@ -62,7 +62,7 @@ $ gcloud auth application-default login
 You must have ansible installed for provisioning to work. You can check installation instructions [here][ansible-install].
 
 ##  3. <a name='Quickstart'></a>Quickstart
-These steps assume that you created a profile following the steps in the [gcloud client](#gcloudclient) section:
+These steps assume that you created a profile following the steps in the [gcloud client](#gcloudclient) section. You must also be in the project's directory (`cvp-in-gcp`):
 - Activate the profile:
 
 ```bash
