@@ -120,6 +120,16 @@ variable "cvp_ingest_key" {
   type        = string
   default     = null
 }
+variable "cvp_k8s_cluster_network" {
+  description = "Internal network that will be used inside the k8s cluster. Applies only to 2021.1.0+."
+  type        = string
+  default     = "10.42.0.0/16"
+}
+variable "cvp_ntp" {
+  description = "NTP server used to keep time synchronization between CVP nodes."
+  type        = string
+  default     = "time.google.com"
+}
 variable "eos_ip_range" {
   description = "IP ranges used by EOS devices that will be managed by the CVP cluster."
   type        = list

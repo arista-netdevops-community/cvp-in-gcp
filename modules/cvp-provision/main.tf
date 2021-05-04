@@ -31,10 +31,9 @@ locals {
   # TODO: Allow users to specify the Wi-Fi cluster IP address
   cvp_wifi_cluster_ip = data.google_compute_instance.cluster_node[0].network_interface.0.network_ip
 
-  # TODO: Allow users to specify the kubernetes network address
-  cvp_k8s_cluster_network = "10.42.0.0/16"
+  cvp_k8s_cluster_network = var.cvp_k8s_cluster_network
 
-  cvp_ntp = "time.google.com"
+  cvp_ntp = var.cvp_ntp
 }
 
 resource "random_password" "root" {

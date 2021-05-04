@@ -136,6 +136,8 @@ Mandatory variables are asked at runtime unless specified on the command line or
 - **cvp_install_size**: CVP installation size. The module will try to guess the best installation size based on the vm size if not provided. Valid values are `demo`, `small`, `production` and `prod_wifi`.
 - **cvp_enable_advanced_login_options**: Whether to enable advanced login options on CVP. This is needed if you're planning to manage devices that are not reachable from the CVP network. Defaults to `false`.
 - **cvp_ingest_key**: Key that will be used to authenticate devices to CVP. Generates a random key by default.
+- **cvp_k8s_cluster_network**: Internal network that will be used inside the k8s cluster. Applies only to 2021.1.0+. Defaults to `10.42.0.0/16`.
+- **cvp_ntp**: NTP server used to keep time synchronization between CVP nodes. Defaults to `time.google.com`.
 - **eos_ip_range**: List of IP ranges used by EOS devices that will be managed by the CVP cluster. Should be set when `cvp_cluster_public_eos_communitation` is set to `false`, otherwise devices won't be able to communicate and stream to CVP.
 
 ##  5. <a name='Examples'></a>Examples

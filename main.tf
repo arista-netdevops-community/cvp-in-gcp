@@ -82,4 +82,6 @@ module "cvp_provision_nodes" {
   cvp_install_size                  = var.cvp_install_size != null ? var.cvp_install_size : null
   cvp_enable_advanced_login_options = var.cvp_enable_advanced_login_options
   cvp_ingest_key                    = local.cvp_ingest_key
+  cvp_k8s_cluster_network           = var.cvp_k8s_cluster_network
+  cvp_ntp                           = var.cvp_ntp
 }

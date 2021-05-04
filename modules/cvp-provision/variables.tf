@@ -15,6 +15,12 @@ variable "cvp_enable_advanced_login_options" {
 variable "cvp_ingest_key" {
   type    = string
 }
+variable "cvp_k8s_cluster_network" {
+  type    = string
+}
+variable "cvp_ntp" {
+  type    = string
+}
 variable "gcp_project_id" {}
 variable "gcp_region" {}
 variable "gcp_network" {}
