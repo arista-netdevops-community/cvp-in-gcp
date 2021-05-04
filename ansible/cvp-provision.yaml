@@ -17,6 +17,8 @@
     data_dir: /data
     data_disk: sdx
     node_name: node1
+    cvp_config: ''
+    filesystem_lock: '/root/.ansible_filesystem'
 
   tasks:
     - name: Image cleanup
@@ -28,14 +30,17 @@
     - name: Resize root partition
       shell:
         cmd: bash -c "echo -e \"p\nd\n2\nn\np\n2\n\n\np\nw\nq\n\"|fdisk /dev/sda" || true
+        creates: "{{ filesystem_lock }}"
 
     - name: Reread root partition
       shell:
         cmd: partprobe
+        creates: "{{ filesystem_lock }}"
 
     - name: Resize root disk
       shell:
-        cmd: resize2fs /dev/sda2
+        cmd: resize2fs /dev/sda2 && touch {{ filesystem_lock }}
+        creates: "{{ filesystem_lock }}"
 
     - name: Prepare data disk
       filesystem:
@@ -62,6 +67,7 @@
           - python-setuptools
         state: latest
 
+    # TODO: Use a virtualenv for python3
     - name: Upgrade pip
       pip:
         extra_args: --upgrade
@@ -74,6 +80,7 @@
         dest: "{{ data_dir }}/eos_download.py"
         mode: 0755
 
+    # TODO: Use a virtualenv for python3
     - name: Setup downloader dependencies
       pip:
         extra_args: --upgrade
@@ -86,6 +93,7 @@
 
     - name: Download CVP
       block:
+        # TODO: Use a virtualenv for python3
         - name: Run EOS downloader
           shell:
             cmd: "{{ data_dir }}/eos_download.py --api {{ api_token }} --ver cvp-{{ cvp_version }} --img rpm"
@@ -127,31 +135,9 @@
         - name: Remove temporary directory
           shell: rm -Rf /tmp/cvp.install.*
 
-    # TODO: Support multiple interfaces
-    - name: Get variables
-      block:
-        - name: Get hostname
-          shell: hostname
-          register: cvp_hostname
-        - name: Get default route
-          shell: ip route show|grep ^default|awk '{print $3}'
-          register: cvp_default_route
-        - name: Get IP address
-          shell: hostname -i
-          register: cvp_ip
-        - name: Get DNS domain
-          shell: hostname -d
-          register: cvp_dns_domain
-        - name: Set template facts
-          set_fact:
-            template_hostname: "{{ cvp_hostname.stdout }}"
-            template_default_route: "{{ cvp_default_route.stdout_lines.0 }}"
-            template_ip: "{{ cvp_ip.stdout }}"
-            template_wifi_ha_cluster_ip: "{{ cvp_ip.stdout }}"
-
-    - name: Create configuration template
-      template:
-        src: cvp-config.jinja2
+    - name: Copy configuration
+      copy:
+        src: "{{ cvp_config }}"
         dest: "{{ data_dir }}/.cvp-ansible-config.yaml"
       register: config_template
 

@@ -27,6 +27,14 @@ locals {
       )
     )
   )
+
+  # TODO: Allow users to specify the Wi-Fi cluster IP address
+  cvp_wifi_cluster_ip = data.google_compute_instance.cluster_node[0].network_interface.0.network_ip
+
+  # TODO: Allow users to specify the kubernetes network address
+  cvp_k8s_cluster_network = "10.42.0.0/16"
+
+  cvp_ntp = "time.google.com"
 }
 
 resource "random_password" "root" {
@@ -44,8 +52,59 @@ data "google_compute_subnetwork" "cluster_node" {
   self_link = data.google_compute_instance.cluster_node[0].network_interface.0.subnetwork
 }
 
+# TODO: Support multiple DNS servers
+data "external" "cluster_node_data" {
+  count = var.vm_ssh_key != null ? length(data.google_compute_instance.cluster_node[*].network_interface.0.access_config.0.nat_ip) : 0 
+  program = [
+    "ssh",
+    "-tt",
+    "-o UserKnownHostsFile=/dev/null",
+    "-o StrictHostKeyChecking=no",
+    "${var.vm_admin_user}@${data.google_compute_instance.cluster_node[count.index].network_interface.0.access_config.0.nat_ip}", 
+    "echo \"{\\\"cvp_hostname\\\": \\\"$(hostname)\\\", \\\"cvp_default_route\\\": \\\"$(/sbin/ip route show|grep ^default|awk '{print $3}'|head -1)\\\", \\\"cvp_ip\\\": \\\"$(hostname -i)\\\", \\\"cvp_dns_domain\\\": \\\"$(hostname -d)\\\", \\\"cvp_net_interface\\\": \\\"$(/sbin/ip a |grep -B2 ${data.google_compute_instance.cluster_node[count.index].network_interface.0.network_ip}|head -1|cut -f2 -d:|xargs)\\\", \\\"cvp_dns\\\": \\\"$(grep nameserver /etc/resolv.conf |cut -f2 -d' ')\\\"}\""
+  ]
+
+  depends_on = [
+    null_resource.cluster_node_user
+  ]
+}
+
+resource "local_file" "cvp_config" {
+  count    = var.vm_ssh_key != null ? 1 : 0
+  content  = templatefile("${path.module}/templates/cvp-config.tpl", {
+    cv_wifi_ha_cluster_ip      = local.cvp_wifi_cluster_ip,
+    cvp_cluster_interface      = data.external.cluster_node_data[0].result.cvp_net_interface,
+    cvp_ingest_key             = var.cvp_ingest_key,
+    cvp_k8s_cluster_network    = local.cvp_k8s_cluster_network,
+    cvp_major_version          = tonumber(split(".", var.cvp_version)[0]),
+    cvp_cluster_nodes_number   = length(data.google_compute_instance.cluster_node[*]),
+    cvp_ntp                    = local.cvp_ntp,
+    cvp_size                   = local.cvp_suggested_size,
+    cvp_wifi_enabled           = local.cvp_suggested_size == "prod_wifi" ? "yes" : "no",
+    cvp_node1_device_interface = data.external.cluster_node_data[0].result.cvp_net_interface,
+    cvp_node1_dns              = data.external.cluster_node_data[0].result.cvp_dns,
+    cvp_node1_hostname         = data.external.cluster_node_data[0].result.cvp_hostname,
+    cvp_node1_ip               = data.external.cluster_node_data[0].result.cvp_ip,
+    cvp_node1_netmask          = cidrnetmask(data.google_compute_subnetwork.cluster_node.ip_cidr_range),
+    cvp_node1_default_route    = data.external.cluster_node_data[0].result.cvp_default_route,
+    cvp_node2_device_interface = length(data.google_compute_instance.cluster_node[*]) > 1 ? data.external.cluster_node_data[1].result.cvp_net_interface : null,
+    cvp_node2_dns              = length(data.google_compute_instance.cluster_node[*]) > 1 ? data.external.cluster_node_data[1].result.cvp_dns : null,
+    cvp_node2_hostname         = length(data.google_compute_instance.cluster_node[*]) > 1 ? data.external.cluster_node_data[1].result.cvp_hostname : null,
+    cvp_node2_ip               = length(data.google_compute_instance.cluster_node[*]) > 1 ? data.external.cluster_node_data[1].result.cvp_ip : null,
+    cvp_node2_netmask          = length(data.google_compute_instance.cluster_node[*]) > 1 ? cidrnetmask(data.google_compute_subnetwork.cluster_node.ip_cidr_range) : null,
+    cvp_node2_default_route    = length(data.google_compute_instance.cluster_node[*]) > 1 ? data.external.cluster_node_data[1].result.cvp_default_route : null,
+    cvp_node3_device_interface = length(data.google_compute_instance.cluster_node[*]) > 2 ? data.external.cluster_node_data[2].result.cvp_net_interface : null,
+    cvp_node3_dns              = length(data.google_compute_instance.cluster_node[*]) > 2 ? data.external.cluster_node_data[2].result.cvp_dns : null,
+    cvp_node3_hostname         = length(data.google_compute_instance.cluster_node[*]) > 2 ? data.external.cluster_node_data[2].result.cvp_hostname : null,
+    cvp_node3_ip               = length(data.google_compute_instance.cluster_node[*]) > 2 ? data.external.cluster_node_data[2].result.cvp_ip : null,
+    cvp_node3_netmask          = length(data.google_compute_instance.cluster_node[*]) > 2 ? cidrnetmask(data.google_compute_subnetwork.cluster_node.ip_cidr_range) : null,
+    cvp_node3_default_route    = length(data.google_compute_instance.cluster_node[*]) > 2 ? data.external.cluster_node_data[2].result.cvp_default_route : null,
+  })
+  filename = "${path.module}/cvp-config.yml"
+}
+
 # TODO: Use proper user and key (needs fixing the image)
-resource "null_resource" "cluster_node" {
+resource "null_resource" "cluster_node_user" {
   count = var.vm_ssh_key != null ? length(data.google_compute_instance.cluster_node[*].network_interface.0.access_config.0.nat_ip) : 0
 
   provisioner "remote-exec" {
@@ -63,16 +122,27 @@ resource "null_resource" "cluster_node" {
       password    = "arastra"
     }
   }
-
+}
+resource "null_resource" "cluster_node_ansible" {
+  count = var.vm_ssh_key != null ? length(data.google_compute_instance.cluster_node[*].network_interface.0.access_config.0.nat_ip) : 0
   provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_KEEP_REMOTE_FILES=1 ansible-playbook -i ${data.google_compute_instance.cluster_node[count.index].network_interface.0.access_config.0.nat_ip}, -u ${var.vm_admin_user} --private-key ${var.vm_private_ssh_key_path} --extra-vars \"cvp_version=${var.cvp_version} api_token=${var.cvp_download_token} cvp_size=${local.cvp_suggested_size} cvp_netmask=${cidrnetmask(data.google_compute_subnetwork.cluster_node.ip_cidr_range)} cvp_enable_advanced_login_options=${var.cvp_enable_advanced_login_options} node_name=node${(count.index+1)} cvp_ingest_key=${var.cvp_ingest_key}\" ansible/cvp-provision.yaml"
+    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ${data.google_compute_instance.cluster_node[count.index].network_interface.0.access_config.0.nat_ip}, -u ${var.vm_admin_user} --private-key ${var.vm_private_ssh_key_path} --extra-vars \"cvp_version=${var.cvp_version} api_token=${var.cvp_download_token} cvp_size=${local.cvp_suggested_size} cvp_enable_advanced_login_options=${var.cvp_enable_advanced_login_options} node_name=node${(count.index+1)} cvp_config=${abspath(local_file.cvp_config[0].filename)}\" ansible/cvp-provision.yaml"
   }
+
+  depends_on = [
+    local_file.cvp_config
+  ]
 }
 
 # data "external" "cvp_token" {
-#   program = [ "ssh", "${var.vm_admin_user}@${data.google_compute_instance.cluster_node[0].network_interface.0.access_config.0.nat_ip}", "curl -sd '{\"reenrollDevices\":[\"*\"]}' -k https://127.0.0.1:9911/cert/createtoken" ]
+#   program = [ 
+#   "ssh",
+#   "-tt",
+#     "-o UserKnownHostsFile=/dev/null",
+#     "-o StrictHostKeyChecking=no",
+#   "${var.vm_admin_user}@${data.google_compute_instance.cluster_node[0].network_interface.0.access_config.0.nat_ip}", "curl -sd '{\"reenrollDevices\":[\"*\"]}' -k https://127.0.0.1:9911/cert/createtoken" ]
 
 #   depends_on = [
-#     null_resource.cluster_node
+#     null_resource.cluster_node_user
 #   ]
 # }

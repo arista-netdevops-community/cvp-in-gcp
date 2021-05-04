@@ -10,3 +10,6 @@ output "cluster_ssh_user" {
 output "cvp_ingest_key" {
   value = "key,${var.cvp_ingest_key}"
 }
+output "cluster_node_data" {
+  value = data.external.cluster_node_data[*]
+}
