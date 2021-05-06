@@ -359,6 +359,17 @@ resource "google_compute_firewall" "cvp_cvp-cvp" {
     ports    = ["2181", "2888", "2889", "2890", "3888", "3889", "3890"]
   }
 
+  # ICMP
+  allow {
+    protocol = "icmp"
+  }
+
+  # etcd
+  allow {
+    protocol = "tcp"
+    ports    = ["2379", "2380"]
+  }
+
   source_tags   = [ "arista-cvp-server" ]
   target_tags   = [ "arista-cvp-server" ]
 }
