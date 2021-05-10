@@ -328,7 +328,20 @@ resource "google_compute_firewall" "cvp_eos-cvp" {
 
   allow {
     protocol = "tcp"
-    ports    = ["80", "443", "9910"]
+    ports    = [
+      "9910",
+      "8443",
+      "4433",
+      "8090"
+    ]
+  }
+
+  allow {
+    protocol = "udp"
+    ports    = [
+      "161",
+      "3851"
+    ]
   }
 
   source_ranges = local.eos_range
@@ -339,35 +352,77 @@ resource "google_compute_firewall" "cvp_cvp-cvp" {
   name        = "fw-cvp-${var.cluster_name}-cvp-cvp"
   project     = data.google_project.project.project_id
   network     = var.gcp_network
-  description = "Allow CVP-CVP cluster communication"
+  description = "Allow CVP-CVP cluster communication. Obtained from /cvpi/tools/firewallConf.py --dumpPorts."
 
-  # Hadoop
   allow {
     protocol = "tcp"
-    ports    = ["8020", "8485", "9001", "50010", "50020", "50070", "50075", "50090"]
+    ports = [
+      "6090-6092",
+      "7077",
+      "9200",
+      "7070",
+      "9092",
+      "2890",
+      "17040",
+      "17000",
+      "10250",
+      "9300",
+      "5432",
+      "9942",
+      "6783",
+      "7078",
+      "7079",
+      "9943",
+      "7074",
+      "15020",
+      "2888",
+      "2889",
+      "2222",
+      "7072",
+      "7073",
+      "2380",
+      "16000",
+      "9100",
+      "6061",
+      "6062",
+      "6063",
+      "3890",
+      "8901",
+      "2379",
+      "16201",
+      "19531",
+      "580",
+      "15090",
+      "15010",
+      "2181",
+      "6443",
+      "9001",
+      "8020",
+      "9093",
+      "15075",
+      "9900",
+      "15070",
+      "5443",
+      "12012-12013",
+      "3889",
+      "3888",
+      "8480",
+      "8481",
+      "9940",
+      "9941",
+      "8485",
+      "9944",
+      "7075",
+      "7076"
+    ]
   }
 
-  # Hbase
   allow {
-    protocol = "tcp"
-    ports    = ["60000", "60010", "60020", "60030"]
-  }
-
-  # Zookeeper
-  allow {
-    protocol = "tcp"
-    ports    = ["2181", "2888", "2889", "2890", "3888", "3889", "3890"]
-  }
-
-  # ICMP
-  allow {
-    protocol = "icmp"
-  }
-
-  # etcd
-  allow {
-    protocol = "tcp"
-    ports    = ["2379", "2380"]
+    protocol = "udp"
+    ports    = [
+      "694",
+      "8472"
+    ]
   }
 
   source_tags   = [ "arista-cvp-server" ]

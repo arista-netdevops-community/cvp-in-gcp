@@ -40,6 +40,9 @@ resource "random_password" "root" {
   length  = 16
   special = true
 }
+resource "random_id" "prefix" {
+  byte_length = 8
+}
 
 data "google_compute_instance" "cluster_node" {
   count = length(local.cluster_node_list)
@@ -66,6 +69,21 @@ data "external" "cluster_node_data" {
   depends_on = [
     null_resource.cluster_node_user
   ]
+}
+
+resource "tls_private_key" "cvp_ssh" {
+  algorithm = "RSA"
+}
+
+resource "local_file" "cvp_ssh_authorized_keys" {
+  filename        = "${path.module}/${random_id.prefix.hex}-cvp-id_rsa.pub"
+  content         = tls_private_key.cvp_ssh.public_key_openssh
+  file_permission = "0644"
+}
+resource "local_file" "cvp_ssh_private" {
+  filename        = "${path.module}/${random_id.prefix.hex}-cvp-id_rsa.pem"
+  content         = tls_private_key.cvp_ssh.private_key_pem
+  file_permission = "0600"
 }
 
 resource "local_file" "cvp_config" {
@@ -99,7 +117,7 @@ resource "local_file" "cvp_config" {
     cvp_node3_netmask          = length(data.google_compute_instance.cluster_node[*]) > 2 ? cidrnetmask(data.google_compute_subnetwork.cluster_node.ip_cidr_range) : null,
     cvp_node3_default_route    = length(data.google_compute_instance.cluster_node[*]) > 2 ? data.external.cluster_node_data[2].result.cvp_default_route : null,
   })
-  filename = "${path.module}/cvp-config.yml"
+  filename = "${path.module}/${random_id.prefix.hex}-cvp-config.yml"
 }
 
 # TODO: Use proper user and key (needs fixing the image)
@@ -125,7 +143,7 @@ resource "null_resource" "cluster_node_user" {
 resource "null_resource" "cluster_node_ansible" {
   count = var.vm_ssh_key != null ? length(data.google_compute_instance.cluster_node[*].network_interface.0.access_config.0.nat_ip) : 0
   provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ${data.google_compute_instance.cluster_node[count.index].network_interface.0.access_config.0.nat_ip}, -u ${var.vm_admin_user} --private-key ${var.vm_private_ssh_key_path} --extra-vars \"cvp_version=${var.cvp_version} api_token=${var.cvp_download_token} cvp_size=${local.cvp_suggested_size} cvp_enable_advanced_login_options=${var.cvp_enable_advanced_login_options} node_name=node${(count.index+1)} cvp_config=${abspath(local_file.cvp_config[0].filename)}\" ansible/cvp-provision.yaml"
+    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ${data.google_compute_instance.cluster_node[count.index].network_interface.0.access_config.0.nat_ip}, -u ${var.vm_admin_user} --private-key ${var.vm_private_ssh_key_path} --extra-vars \"cvp_version=${var.cvp_version} api_token=${var.cvp_download_token} cvp_size=${local.cvp_suggested_size} cvp_enable_advanced_login_options=${var.cvp_enable_advanced_login_options} node_name=node${(count.index+1)} cvp_config=${abspath(local_file.cvp_config[0].filename)} cvp_authorized_keys=${abspath(local_file.cvp_ssh_authorized_keys.filename)} cvp_private_key=${abspath(local_file.cvp_ssh_private.filename)}\" ansible/cvp-provision.yaml"
   }
 
   depends_on = [
