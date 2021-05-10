@@ -205,15 +205,16 @@
 
     - name: Copy SSH keys
       block:
-        # TODO: Figure out why naming a key id_rsa doesn't work
-        # WARNING: HERE BE DRAGONS
-        #          For some reason if a key filename is id_rsa the wrong key is sent to the ssh server.
-        #          Simply naming it id_dsa worked, and I'm keeping it this way to avoid spending another
-        #          countless hours of work.
         - name: Copy private key
           copy:
             src: "{{ cvp_private_key }}"
-            dest: /home/cvp/.ssh/id_dsa
+            dest: /home/cvp/.ssh/id_rsa
+            owner: cvp
+            mode: '600'
+        - name: Copy public key
+          copy:
+            src: "{{ cvp_authorized_keys }}"
+            dest: /home/cvp/.ssh/id_rsa.pub
             owner: cvp
             mode: '600'
         - name: Copy authorized_keys
@@ -222,15 +223,6 @@
             dest: /home/cvp/.ssh/authorized_keys
             owner: cvp
             mode: '600'
-        - name: Remove id_rsa
-          file:
-            path: /home/cvp/.ssh/id_rsa
-            state: absent
-        - name: Link id_dsa to id_rsa
-          file:
-            path: /home/cvp/.ssh/id_rsa
-            state: link
-            src: /home/cvp/.ssh/id_dsa
 
     - name: Configure CVP
       block:
