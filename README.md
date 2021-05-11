@@ -186,7 +186,6 @@ This command removes everything except data disks (and networks when using pre-e
 - **target module.cvp_cluster**: Due to limitations in terraform we need to run it twice when creating the environment for the first time. This is due to the need of referencing instances that are created by the Instance Group Manager when provisioning the cluster, which can only be done after the environment is actually created. <br />&nbsp;<br />The first run should use the parameter `-target module.cvp_cluster` so that only the cluster creation takes place, ignoring the provisioning part. Once the cluster is running the parameter shouldn't be used anymore, and subsequent runs will both adjust cluster settings and do all necessary provisioning steps.
 
 ##  8. <a name='BugsandLimitations'></a>Bugs and Limitations
-- **Only single-node clusters are supported for now**. Support for multi-node clusters will be added in future releases.
 - Resizing clusters is not supported at this time.
 - This module connects to the instance using the `root` user instead of the declared user for provisioning due to limitations in the base image that's being used. If you know your way around terraform and understand what you're doing, this behaviour can be changed by editing the `modules/cvp-provision/main.tf` file.
 - CVP installation size auto-discovery only works for custom instances at this time.
