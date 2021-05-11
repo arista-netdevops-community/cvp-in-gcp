@@ -76,12 +76,12 @@ resource "tls_private_key" "cvp_ssh" {
 }
 
 resource "local_file" "cvp_ssh_authorized_keys" {
-  filename        = "${path.module}/${random_id.prefix.hex}-cvp-id_rsa.pub"
+  filename        = "${path.module}/dynamic/${random_id.prefix.hex}-cvp-id_rsa.pub"
   content         = tls_private_key.cvp_ssh.public_key_openssh
   file_permission = "0644"
 }
 resource "local_file" "cvp_ssh_private" {
-  filename        = "${path.module}/${random_id.prefix.hex}-cvp-id_rsa.pem"
+  filename        = "${path.module}/dynamic/${random_id.prefix.hex}-cvp-id_rsa.pem"
   content         = tls_private_key.cvp_ssh.private_key_pem
   file_permission = "0600"
 }
@@ -117,7 +117,7 @@ resource "local_file" "cvp_config" {
     cvp_node3_netmask          = length(data.google_compute_instance.cluster_node[*]) > 2 ? cidrnetmask(data.google_compute_subnetwork.cluster_node.ip_cidr_range) : null,
     cvp_node3_default_route    = length(data.google_compute_instance.cluster_node[*]) > 2 ? data.external.cluster_node_data[2].result.cvp_default_route : null,
   })
-  filename = "${path.module}/${random_id.prefix.hex}-cvp-config.yml"
+  filename = "${path.module}/dynamic/${random_id.prefix.hex}-cvp-config.yml"
 }
 
 # TODO: Use proper user and key (needs fixing the image)

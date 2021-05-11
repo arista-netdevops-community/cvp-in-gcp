@@ -75,12 +75,6 @@
         path: /etc/sysconfig/network-scripts/ifcfg-ens3
         state: absent
 
-    - name: Disable login failure messages
-      replace:
-        path: /etc/pam.d/postlogin
-        regexp: showfailed
-        replace: ''
-
     # TODO: Only resize when required
     - name: Resize root partition
       shell:
@@ -264,6 +258,24 @@
           become_method: su
           become_flags: '-s /bin/bash'
           when: config_template.changed
+
+    - name: Login tweaks
+      block:
+        - name: Disable login failure messages
+          replace:
+            path: /etc/pam.d/postlogin
+            regexp: showfailed
+            replace: ''
+        - name: Disable last login messages
+          lineinfile:
+            path: /etc/cvpi/sshd_config
+            line: PrintLastLog no
+            register: sshd_config
+        - name: Restart sshd
+          service:
+            name: sshd
+            state: restarted
+          when: sshd_config.changed
 
     - name: Start CVP
       block:
