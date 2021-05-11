@@ -37,35 +37,38 @@
     #     msg: "{{ msg.split('\n') }}"
     #   tags: debug_info
 
-    - name: Add custom routes (node1->node2)
-      shell:
-        cmd: ip route add {{ node2.interfaces.eth0.ip_address }} via {{ node1.default_route }} || true
-      when: node_name == "node1" and node1.num_static_route == "2" and cloud_provider == "gcp"
+    - name: Multi-node custom routes
+      block:
+        - name: Add custom routes (node1->node2)
+          shell:
+            cmd: ip route add {{ node2.interfaces.eth0.ip_address }} via {{ node1.default_route }} || true
+          when: node_name == "node1" and node1.num_static_route == "2" and cloud_provider == "gcp"
 
-    - name: Add custom routes (node1->node3)
-      shell:
-        cmd: ip route add {{ node3.interfaces.eth0.ip_address }} via {{ node1.default_route }} || true
-      when: node_name == "node1" and node1.num_static_route == "2" and cloud_provider == "gcp"
+        - name: Add custom routes (node1->node3)
+          shell:
+            cmd: ip route add {{ node3.interfaces.eth0.ip_address }} via {{ node1.default_route }} || true
+          when: node_name == "node1" and node1.num_static_route == "2" and cloud_provider == "gcp"
 
-    - name: Add custom routes (node2->node1)
-      shell:
-        cmd: ip route add {{ node1.interfaces.eth0.ip_address }} via {{ node2.default_route }} || true
-      when: node_name == "node2" and node1.num_static_route == "2" and cloud_provider == "gcp"
+        - name: Add custom routes (node2->node1)
+          shell:
+            cmd: ip route add {{ node1.interfaces.eth0.ip_address }} via {{ node2.default_route }} || true
+          when: node_name == "node2" and node2.num_static_route == "2" and cloud_provider == "gcp"
 
-    - name: Add custom routes (node2->node3)
-      shell:
-        cmd: ip route add {{ node3.interfaces.eth0.ip_address }} via {{ node2.default_route }} || true
-      when: node_name == "node2" and node1.num_static_route == "2" and cloud_provider == "gcp"
+        - name: Add custom routes (node2->node3)
+          shell:
+            cmd: ip route add {{ node3.interfaces.eth0.ip_address }} via {{ node2.default_route }} || true
+          when: node_name == "node2" and node2.num_static_route == "2" and cloud_provider == "gcp"
 
-    - name: Add custom routes (node3->node1)
-      shell:
-        cmd: ip route add {{ node1.interfaces.eth0.ip_address }} via {{ node3.default_route }} || true
-      when: node_name == "node3" and node1.num_static_route == "2" and cloud_provider == "gcp"
+        - name: Add custom routes (node3->node1)
+          shell:
+            cmd: ip route add {{ node1.interfaces.eth0.ip_address }} via {{ node3.default_route }} || true
+          when: node_name == "node3" and node3.num_static_route == "2" and cloud_provider == "gcp"
 
-    - name: Add custom routes (node3->node2)
-      shell:
-        cmd: ip route add {{ node2.interfaces.eth0.ip_address }} via {{ node3.default_route }} || true
-      when: node_name == "node3" and node1.num_static_route == "2" and cloud_provider == "gcp"
+        - name: Add custom routes (node3->node2)
+          shell:
+            cmd: ip route add {{ node2.interfaces.eth0.ip_address }} via {{ node3.default_route }} || true
+          when: node_name == "node3" and node3.num_static_route == "2" and cloud_provider == "gcp"
+      when: node1.num_static_route is defined
 
     - name: Image cleanup
       file:
@@ -73,7 +76,10 @@
         state: absent
 
     - name: Disable login failure messages
-      shell: sed -i 's/showfailed//g' /etc/pam.d/postlogin
+      replace:
+        path: /etc/pam.d/postlogin
+        regexp: showfailed
+        replace: ''
 
     # TODO: Only resize when required
     - name: Resize root partition
