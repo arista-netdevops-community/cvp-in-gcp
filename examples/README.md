@@ -7,4 +7,8 @@ Publically-accessible CVP single node deployment. This is a good way to quickly 
 - Creates one CVP instance and installs the default version of CVP in it
 - Enables advanced login options to allow EOS devices to self-register
 - Sets up firewall rules so management and ingest ports are publically accessible
+- Deploys the module's default CVP version
 
+## multi-node-cvp-deployment.tfvars
+Publically-accessible CVP multi-node deployment.
+- Similar to the single node deployment above, but also uses a specific CVP version (2021.1.0) and deploys a 3-node cluster.
