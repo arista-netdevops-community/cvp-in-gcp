@@ -51,7 +51,7 @@ $ gcloud init
 - Choose [1] Re-initialize this configuration [arista-cvp] with new settings
 - Select an existing project from the list or create a new project if desired. Clusters will be launched in this project. If you're trying to create a project and receives an error saying `No permission to create project in organization` you'll need to check your permissions with your cloud administrator or use an existing project.
 - Choose `Y` when asked whether to configure a default Compute Region and Zone
-- You can select any region. For the purposes of this guide we'll use option `8` (`us-central1-a`)
+- You can select any region. For this guide, we'll use option `8` (`us-central1-a`)
 
 
 2. Get API credentials for terraform
@@ -70,7 +70,7 @@ These steps assume that you created a profile following the steps in the [gcloud
 $ gcloud config configurations activate cvp-profile
 ```
 
-- Initialize terraform (only needed on the first run): 
+- Initialize Terraform (only needed on the first run):
 
 ```bash
 $ terraform init
@@ -109,7 +109,7 @@ $ terraform plan -out=plan.out -var-file=examples/one-node-cvp-deployment.tfvars
 terraform apply plan.out
 ```
 
-- Go have a coffee. At this point CVP should be starting in your instance and may take some time to finish bringing all services up. You can ssh into your cvp instances with the displayed `cvp_cluster_ssh_user` and `cvp_cluster_nodes_ips` to check progress.
+- Go have a coffee. At this point, CVP should be starting in your instance and may take some time to finish bringing all services up. You can ssh into your cvp instances with the displayed `cvp_cluster_ssh_user` and `cvp_cluster_nodes_ips` to check progress.
 
 ##  4. <a name='AddingEOSdevices'></a>Adding EOS devices
 If devices are in a network that can't be reached by CVP they need to be added by configuring TerminAttr on the devices themselves (similar to any setup behind NAT). At the end of the
@@ -137,7 +137,7 @@ Mandatory variables are asked at runtime unless specified on the command line or
 - **gcp_network**: The network in which clusters will be launched. Leaving this blank will create a new network.
 - **cvp_cluster_vmtype**: The type of instances used for CVP
 - **cvp_cluster_centos_version**: The Centos version used by CVP instances. If not provided we'll try to choose the appropriate one based on the CVP version that's being installed.
-- **cvp_cluster_public_management**: Whether the cluster UI and SSH ports (https/ssh) is publically accessible over the internet. Defaults to `false`.
+- **cvp_cluster_public_management**: Whether the cluster UI and SSH ports (HTTPS/ssh) is publically accessible over the internet. Defaults to `false`.
 - **cvp_cluster_public_eos_communitation**: Whether the ports used by EOS devices to communicate to CVP are publically accessible over the internet. Defaults to `false`.
 - **cvp_cluster_vm_admin_user**: Admin user to connect to instances in the CVP cluster using ssh. Should be used in conjunction with `cvp_cluster_vm_key`. Defaults to `cvpsshadmin`.
 - **cvp_cluster_vm_key**: Path to the public SSH key used to access instances in the CVP cluster using ssh as the `cvp_cluster_vm_admin_user` user. If not provided we'll use `~/.ssh/id_rsa.pub` by default.
@@ -145,12 +145,12 @@ Mandatory variables are asked at runtime unless specified on the command line or
 - **cvp_cluster_vm_password**: Password used to access instances in the CVP cluster.
 - **cvp_cluster_remove_disks**: Whether data disks created for the instances will be removed when destroying them. Defaults to `false`.
 - **cvp_version**: CVP version to install on the cluster. Defaults to `2020.3.1`.
-- **cvp_install_size**: CVP installation size. The module will try to guess the best installation size based on the vm size if not provided. Valid values are `demo`, `small`, `production` and `prod_wifi`.
+- **cvp_install_size**: CVP installation size. The module will try to guess the best installation size based on the VM size if not provided. Valid values are `demo`, `small`, `production` and `prod_wifi`.
 - **cvp_enable_advanced_login_options**: Whether to enable advanced login options on CVP. This is needed if you're planning to manage devices that are not reachable from the CVP network. Defaults to `false`.
 - **cvp_ingest_key**: Key that will be used to authenticate devices to CVP. Generates a random key by default.
 - **cvp_k8s_cluster_network**: Internal network that will be used inside the k8s cluster. Applies only to 2021.1.0+. Defaults to `10.42.0.0/16`.
 - **cvp_ntp**: NTP server used to keep time synchronization between CVP nodes. Defaults to `time.google.com`.
-- **eos_ip_range**: List of IP ranges used by EOS devices that will be managed by the CVP cluster. Should be set when `cvp_cluster_public_eos_communitation` is set to `false`, otherwise devices won't be able to communicate and stream to CVP.
+- **eos_ip_range**: List of IP ranges used by EOS devices that will be managed by the CVP cluster. Should be set when `cvp_cluster_public_eos_communitation` is set to `false`, otherwise, devices won't be able to communicate and stream to CVP.
 
 ##  6. <a name='Examples'></a>Examples
 <!-- ###  5.1. <a name='UsingtheDockerimage'></a>Using the Docker image
@@ -195,11 +195,11 @@ This command removes everything except data disks (and networks when using pre-e
 ##  8. <a name='OtherNotes'></a>Other Notes
 - **Data disks**: Data disks will **not** be removed when destroying the environment unless `cvp_cluster_remove_disks` is set to `true`. Make sure to remove them manually when they're no longer needed.
 
-- **target module.cvp_cluster**: Due to limitations in terraform we need to run it twice when creating the environment for the first time. This is due to the need of referencing instances that are created by the Instance Group Manager when provisioning the cluster, which can only be done after the environment is actually created. <br />&nbsp;<br />The first run should use the parameter `-target module.cvp_cluster` so that only the cluster creation takes place, ignoring the provisioning part. Once the cluster is running the parameter shouldn't be used anymore, and subsequent runs will both adjust cluster settings and do all necessary provisioning steps.
+- **target module.cvp_cluster**: Due to limitations in Terraform we need to run it twice when creating the environment for the first time. This is due to the need of referencing instances that are created by the Instance Group Manager when provisioning the cluster, which can only be done after the environment is created. <br />&nbsp;<br />The first run should use the parameter `-target module.cvp_cluster` so that only the cluster creation takes place, ignoring the provisioning part. Once the cluster is running the parameter shouldn't be used anymore, and subsequent runs will both adjust cluster settings and do all necessary provisioning steps.
 
 ##  9. <a name='BugsandLimitations'></a>Bugs and Limitations
 - Resizing clusters is not supported at this time.
-- This module connects to the instance using the `root` user instead of the declared user for provisioning due to limitations in the base image that's being used. If you know your way around terraform and understand what you're doing, this behaviour can be changed by editing the `modules/cvp-provision/main.tf` file.
+- This module connects to the instance using the `root` user instead of the declared user for provisioning due to limitations in the base image that's being used. If you know your way around terraform and understand what you're doing, this behavior can be changed by editing the `modules/cvp-provision/main.tf` file.
 - CVP installation size auto-discovery only works for custom instances at this time.
 
 
