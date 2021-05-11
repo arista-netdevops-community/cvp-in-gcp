@@ -94,6 +94,11 @@ variable "cvp_k8s_cluster_network" {
   description = "Internal network that will be used inside the k8s cluster. Applies only to 2021.1.0+."
   type        = string
   default     = "10.42.0.0/16"
+
+  validation {
+    condition     = (split(".", var.cvp_k8s_cluster_network)[0] != "169" || split(".", var.cvp_k8s_cluster_network)[1] != "254") && (split(".", var.cvp_k8s_cluster_network)[1] != "127")
+    error_message = "The internal kubernetes network shouldn't be in the 169.254.0.0/16 or 127.0.0.0/8 ranges."
+  }
 }
 variable "cvp_ntp" {
   description = "NTP server used to keep time synchronization between CVP nodes."
