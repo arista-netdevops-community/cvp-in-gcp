@@ -9,15 +9,16 @@ Templates to launch fully functional CVP clusters in GCP.
 	* 2.2. [gcloud client](#gcloudclient)
 	* 2.3. [ansible](#ansible)
 * 3. [Quickstart](#Quickstart)
-* 4. [Variables](#Variables)
-		* 4.1. [Mandatory](#Mandatory)
-		* 4.2. [Optional](#Optional)
-* 5. [Examples](#Examples)
-	* 5.1. [Using a `.tfvars` file](#Usinga.tfvarsfile)
-	* 5.2. [Using command-line variables:](#Usingcommand-linevariables:)
-* 6. [Removing the environment](#Removingtheenvironment)
-* 7. [Other Notes](#OtherNotes)
-* 8. [Bugs and Limitations](#BugsandLimitations)
+* 4. [Adding EOS devices](#AddingEOSdevices)
+* 5. [Variables](#Variables)
+		* 5.1. [Mandatory](#Mandatory)
+		* 5.2. [Optional](#Optional)
+* 6. [Examples](#Examples)
+	* 6.1. [Using a `.tfvars` file](#Usinga.tfvarsfile)
+	* 6.2. [Using command-line variables:](#Usingcommand-linevariables:)
+* 7. [Removing the environment](#Removingtheenvironment)
+* 8. [Other Notes](#OtherNotes)
+* 9. [Bugs and Limitations](#BugsandLimitations)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -110,10 +111,21 @@ terraform apply plan.out
 
 - Go have a coffee. At this point CVP should be starting in your instance and may take some time to finish bringing all services up. You can ssh into your cvp instances with the displayed `cvp_cluster_ssh_user` and `cvp_cluster_nodes_ips` to check progress.
 
-##  4. <a name='Variables'></a>Variables
+##  4. <a name='AddingEOSdevices'></a>Adding EOS devices
+If devices are in a network that can't be reached by CVP they need to be added by configuring TerminAttr on the devices themselves (similar to any setup behind NAT). At the end of the
+terraform run a suggested TerminAttr configuration line will be displayed containing the appropriate `ingestgrpcurl` and `ingestauth` parameters:
+
+```
+Provisioning complete. To add devices use the following TerminAttr configuration:
+exec /usr/bin/TerminAttr -ingestgrpcurl=34.71.81.254:9910 -cvcompression=gzip -ingestauth=key,JkqAGsEyGPmUZ3X0 -smashexcludes=ale,flexCounter,hardware,kni,pulse,strata -ingestexclude=/Sysdb/cell/1/agent,/Sysdb/cell/2/agent -ingestvrf=default -taillogs
+```
+
+The `exec` configuration can be copy-pasted and should be usable in most scenarios.
+
+##  5. <a name='Variables'></a>Variables
 Mandatory variables are asked at runtime unless specified on the command line or using a [.tfvars file](terraform-tfvars), recommended in most cases.
 
-####  4.1. <a name='Mandatory'></a>Mandatory
+####  5.1. <a name='Mandatory'></a>Mandatory
 - **gcp_project_id**: The name of the GCP Project where all resources will be launched. May also be obtained from the `GOOGLE_PROJECT` environment variable.
 - **gcp_region**: The region in which all GCP resources will be launched.
 - **gcp_zone**: The zone in which all GCP resources will be launched. Must be a valid zone within the desired `gcp_region`.
@@ -121,7 +133,7 @@ Mandatory variables are asked at runtime unless specified on the command line or
 - **cvp_cluster_size**: The number of nodes in the CVP cluster. Must be 1 or 3 nodes.
 - **cvp_download_token**: Arista Portal token used to download CVP.
 
-####  4.2. <a name='Optional'></a>Optional
+####  5.2. <a name='Optional'></a>Optional
 - **gcp_network**: The network in which clusters will be launched. Leaving this blank will create a new network.
 - **cvp_cluster_vmtype**: The type of instances used for CVP
 - **cvp_cluster_centos_version**: The Centos version used by CVP instances. If not provided we'll try to choose the appropriate one based on the CVP version that's being installed.
@@ -140,7 +152,7 @@ Mandatory variables are asked at runtime unless specified on the command line or
 - **cvp_ntp**: NTP server used to keep time synchronization between CVP nodes. Defaults to `time.google.com`.
 - **eos_ip_range**: List of IP ranges used by EOS devices that will be managed by the CVP cluster. Should be set when `cvp_cluster_public_eos_communitation` is set to `false`, otherwise devices won't be able to communicate and stream to CVP.
 
-##  5. <a name='Examples'></a>Examples
+##  6. <a name='Examples'></a>Examples
 <!-- ###  5.1. <a name='UsingtheDockerimage'></a>Using the Docker image
 The docker image contains all dependencies pre-installed. It uses the same general syntax as the `.tfvars` method:
 
@@ -156,7 +168,7 @@ Some directories can be mounted if you wish to use pre-existing configuration:
 If those directories are not mounted new configurations will be generated.
 -->
 
-###  5.1. <a name='Usinga.tfvarsfile'></a>Using a `.tfvars` file
+###  6.1. <a name='Usinga.tfvarsfile'></a>Using a `.tfvars` file
 **Note**: Before running this please replace the `gcp_project_id` variable in the provided example file with the correct name of your project and `cvp_download_token` with your Arista Portal token.
 
 ```bash
@@ -164,14 +176,14 @@ $ terraform apply -var-file=examples/one-node-cvp-deployment.tfvars -target modu
 $ terraform apply -var-file=examples/one-node-cvp-deployment.tfvars # subsequent applies
 ```
 
-###  5.2. <a name='Usingcommand-linevariables:'></a>Using command-line variables:
+###  6.2. <a name='Usingcommand-linevariables:'></a>Using command-line variables:
 
 ```bash
 $ terraform apply -var gcp_project_id=myproject -var gcp_region=us-central1 -var gcp_zone=a -var cvp_cluster_name=my-cvp-cluster -var cvp_cluster_size=1 -var cvp_cluster_public_management=true -var cvp_cluster_vm_key="~/.ssh/id_rsa.pub" -var cvp_cluster_vm_private_key="~/.ssh/id_rsa" -var cvp_download_token="PLACE_YOUR_PORTAL_TOKEN_HERE" -target module.cvp_cluster # first apply only
 $ terraform apply -var gcp_project_id=myproject -var gcp_region=us-central1 -var gcp_zone=a -var cvp_cluster_name=my-cvp-cluster -var cvp_cluster_size=1 -var cvp_cluster_public_management=true -var cvp_cluster_vm_key="~/.ssh/id_rsa.pub" -var cvp_cluster_vm_private_key="~/.ssh/id_rsa" -var cvp_download_token="PLACE_YOUR_PORTAL_TOKEN_HERE" # subsequent applies
 ```
 
-##  6. <a name='Removingtheenvironment'></a>Removing the environment
+##  7. <a name='Removingtheenvironment'></a>Removing the environment
 In order to remove the environment you launched you can run the following command:
 
 ```bash
@@ -180,12 +192,12 @@ $ terraform destroy -var-file=examples/one-node-cvp-deployment.tfvars
 
 This command removes everything except data disks (and networks when using pre-existing ones) from the GCP project. Please read [other notes](#OtherNotes) below for more info.
 
-##  7. <a name='OtherNotes'></a>Other Notes
+##  8. <a name='OtherNotes'></a>Other Notes
 - **Data disks**: Data disks will **not** be removed when destroying the environment unless `cvp_cluster_remove_disks` is set to `true`. Make sure to remove them manually when they're no longer needed.
 
 - **target module.cvp_cluster**: Due to limitations in terraform we need to run it twice when creating the environment for the first time. This is due to the need of referencing instances that are created by the Instance Group Manager when provisioning the cluster, which can only be done after the environment is actually created. <br />&nbsp;<br />The first run should use the parameter `-target module.cvp_cluster` so that only the cluster creation takes place, ignoring the provisioning part. Once the cluster is running the parameter shouldn't be used anymore, and subsequent runs will both adjust cluster settings and do all necessary provisioning steps.
 
-##  8. <a name='BugsandLimitations'></a>Bugs and Limitations
+##  9. <a name='BugsandLimitations'></a>Bugs and Limitations
 - Resizing clusters is not supported at this time.
 - This module connects to the instance using the `root` user instead of the declared user for provisioning due to limitations in the base image that's being used. If you know your way around terraform and understand what you're doing, this behaviour can be changed by editing the `modules/cvp-provision/main.tf` file.
 - CVP installation size auto-discovery only works for custom instances at this time.
