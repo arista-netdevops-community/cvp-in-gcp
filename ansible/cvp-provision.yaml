@@ -259,6 +259,8 @@
           become_flags: '-s /bin/bash'
           when: config_template.changed
 
+    # This is to avoid "command ssh produced invalid JSON: invalid character 'b' after top-level value" errors
+    # when refreshing the terraform state
     - name: Login tweaks
       block:
         - name: Disable login failure messages
@@ -270,7 +272,7 @@
           lineinfile:
             path: /etc/cvpi/sshd_config
             line: PrintLastLog no
-            register: sshd_config
+          register: sshd_config
         - name: Restart sshd
           service:
             name: sshd
