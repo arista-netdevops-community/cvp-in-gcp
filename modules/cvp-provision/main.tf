@@ -63,7 +63,7 @@ data "external" "cluster_node_data" {
     "-o UserKnownHostsFile=/dev/null",
     "-o StrictHostKeyChecking=no",
     "${var.vm_admin_user}@${data.google_compute_instance.cluster_node[count.index].network_interface.0.access_config.0.nat_ip}", 
-    "echo \"{\\\"cvp_hostname\\\": \\\"$(hostname)\\\", \\\"cvp_default_route\\\": \\\"$(/sbin/ip route show|grep ^default|awk '{print $3}'|head -1)\\\", \\\"cvp_ip\\\": \\\"$(hostname -i)\\\", \\\"cvp_dns_domain\\\": \\\"$(hostname -d)\\\", \\\"cvp_net_interface\\\": \\\"$(/sbin/ip a |grep -B2 ${data.google_compute_instance.cluster_node[count.index].network_interface.0.network_ip}|head -1|cut -f2 -d:|xargs)\\\", \\\"cvp_dns\\\": \\\"$(grep nameserver /etc/resolv.conf |cut -f2 -d' ')\\\"}\""
+    "echo \"{\\\"cvp_hostname\\\": \\\"$(hostname)\\\", \\\"cvp_dns_domain\\\": \\\"$(hostname -d)\\\", \\\"cvp_net_interface\\\": \\\"$(/sbin/ip a |grep -B2 ${data.google_compute_instance.cluster_node[count.index].network_interface.0.network_ip}|head -1|cut -f2 -d:|xargs)\\\", \\\"cvp_dns\\\": \\\"$(grep nameserver /etc/resolv.conf |cut -f2 -d' ')\\\"}\""
   ]
 
   depends_on = [
@@ -98,24 +98,27 @@ resource "local_file" "cvp_config" {
     cvp_ntp                    = local.cvp_ntp,
     cvp_size                   = local.cvp_suggested_size,
     cvp_wifi_enabled           = local.cvp_suggested_size == "prod_wifi" ? "yes" : "no",
+    cvp_node1_default_route    = data.google_compute_subnetwork.cluster_node.gateway_address,
     cvp_node1_device_interface = data.external.cluster_node_data[0].result.cvp_net_interface,
     cvp_node1_dns              = data.external.cluster_node_data[0].result.cvp_dns,
     cvp_node1_hostname         = data.external.cluster_node_data[0].result.cvp_hostname,
-    cvp_node1_ip               = data.external.cluster_node_data[0].result.cvp_ip,
+    cvp_node1_ip               = data.google_compute_instance.cluster_node[0].network_interface.0.network_ip,
     cvp_node1_netmask          = cidrnetmask(data.google_compute_subnetwork.cluster_node.ip_cidr_range),
-    cvp_node1_default_route    = data.external.cluster_node_data[0].result.cvp_default_route,
+    cvp_node1_public_ip        = data.google_compute_instance.cluster_node[0].network_interface.0.access_config.0.nat_ip,
+    cvp_node2_default_route    = length(data.google_compute_instance.cluster_node[*]) > 1 ? data.google_compute_subnetwork.cluster_node.gateway_address : null,
     cvp_node2_device_interface = length(data.google_compute_instance.cluster_node[*]) > 1 ? data.external.cluster_node_data[1].result.cvp_net_interface : null,
     cvp_node2_dns              = length(data.google_compute_instance.cluster_node[*]) > 1 ? data.external.cluster_node_data[1].result.cvp_dns : null,
     cvp_node2_hostname         = length(data.google_compute_instance.cluster_node[*]) > 1 ? data.external.cluster_node_data[1].result.cvp_hostname : null,
-    cvp_node2_ip               = length(data.google_compute_instance.cluster_node[*]) > 1 ? data.external.cluster_node_data[1].result.cvp_ip : null,
+    cvp_node2_ip               = length(data.google_compute_instance.cluster_node[*]) > 1 ? data.google_compute_instance.cluster_node[1].network_interface.0.network_ip : null,
     cvp_node2_netmask          = length(data.google_compute_instance.cluster_node[*]) > 1 ? cidrnetmask(data.google_compute_subnetwork.cluster_node.ip_cidr_range) : null,
-    cvp_node2_default_route    = length(data.google_compute_instance.cluster_node[*]) > 1 ? data.external.cluster_node_data[1].result.cvp_default_route : null,
+    cvp_node2_public_ip        = length(data.google_compute_instance.cluster_node[*]) > 1 ? data.google_compute_instance.cluster_node[1].network_interface.0.access_config.0.nat_ip : null,
+    cvp_node3_default_route    = length(data.google_compute_instance.cluster_node[*]) > 2 ? data.google_compute_subnetwork.cluster_node.gateway_address : null,
     cvp_node3_device_interface = length(data.google_compute_instance.cluster_node[*]) > 2 ? data.external.cluster_node_data[2].result.cvp_net_interface : null,
     cvp_node3_dns              = length(data.google_compute_instance.cluster_node[*]) > 2 ? data.external.cluster_node_data[2].result.cvp_dns : null,
     cvp_node3_hostname         = length(data.google_compute_instance.cluster_node[*]) > 2 ? data.external.cluster_node_data[2].result.cvp_hostname : null,
-    cvp_node3_ip               = length(data.google_compute_instance.cluster_node[*]) > 2 ? data.external.cluster_node_data[2].result.cvp_ip : null,
+    cvp_node3_ip               = length(data.google_compute_instance.cluster_node[*]) > 2 ? data.google_compute_instance.cluster_node[2].network_interface.0.network_ip : null,
     cvp_node3_netmask          = length(data.google_compute_instance.cluster_node[*]) > 2 ? cidrnetmask(data.google_compute_subnetwork.cluster_node.ip_cidr_range) : null,
-    cvp_node3_default_route    = length(data.google_compute_instance.cluster_node[*]) > 2 ? data.external.cluster_node_data[2].result.cvp_default_route : null,
+    cvp_node3_public_ip        = length(data.google_compute_instance.cluster_node[*]) > 2 ? data.google_compute_instance.cluster_node[2].network_interface.0.access_config.0.nat_ip : null,
   })
   filename = "${path.module}/dynamic/${random_id.prefix.hex}-cvp-config.yml"
 }
