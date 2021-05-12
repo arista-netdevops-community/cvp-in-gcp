@@ -15,6 +15,7 @@ node1:
   interfaces:
     ${cvp_node1_device_interface}:
       ip_address: ${cvp_node1_ip}
+      nat_ip_address: ${cvp_node1_public_ip}
       netmask: ${cvp_node1_netmask}
 %{if cvp_cluster_nodes_number == 3}
   num_static_route: '2'
@@ -36,6 +37,7 @@ node2:
   interfaces:
     ${cvp_node2_device_interface}:
       ip_address: ${cvp_node2_ip}
+      nat_ip_address: ${cvp_node2_public_ip}
       netmask: ${cvp_node2_netmask}
   num_static_route: '2'
   static_routes:
@@ -55,6 +57,7 @@ node3:
   interfaces:
     ${cvp_node3_device_interface}:
       ip_address: ${cvp_node3_ip}
+      nat_ip_address: ${cvp_node3_public_ip}
       netmask: ${cvp_node3_netmask}
   num_static_route: '2'
   static_routes:

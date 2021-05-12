@@ -1,7 +1,7 @@
 - hosts: all
   become: yes
   vars:
-    cloud_provider: 'gcp'
+    cloud_provider: ''
     cv_wifi_ha_cluster_ip: ''
     cvp_authorized_keys: ''
     cvp_cluster_interface: eth0
@@ -42,33 +42,33 @@
         - name: Add custom routes (node1->node2)
           shell:
             cmd: ip route add {{ node2.interfaces.eth0.ip_address }} via {{ node1.default_route }} || true
-          when: node_name == "node1" and node1.num_static_route == "2" and cloud_provider == "gcp"
+          when: node_name == "node1" and node1.num_static_route == "2"
 
         - name: Add custom routes (node1->node3)
           shell:
             cmd: ip route add {{ node3.interfaces.eth0.ip_address }} via {{ node1.default_route }} || true
-          when: node_name == "node1" and node1.num_static_route == "2" and cloud_provider == "gcp"
+          when: node_name == "node1" and node1.num_static_route == "2"
 
         - name: Add custom routes (node2->node1)
           shell:
             cmd: ip route add {{ node1.interfaces.eth0.ip_address }} via {{ node2.default_route }} || true
-          when: node_name == "node2" and node2.num_static_route == "2" and cloud_provider == "gcp"
+          when: node_name == "node2" and node2.num_static_route == "2"
 
         - name: Add custom routes (node2->node3)
           shell:
             cmd: ip route add {{ node3.interfaces.eth0.ip_address }} via {{ node2.default_route }} || true
-          when: node_name == "node2" and node2.num_static_route == "2" and cloud_provider == "gcp"
+          when: node_name == "node2" and node2.num_static_route == "2"
 
         - name: Add custom routes (node3->node1)
           shell:
             cmd: ip route add {{ node1.interfaces.eth0.ip_address }} via {{ node3.default_route }} || true
-          when: node_name == "node3" and node3.num_static_route == "2" and cloud_provider == "gcp"
+          when: node_name == "node3" and node3.num_static_route == "2"
 
         - name: Add custom routes (node3->node2)
           shell:
             cmd: ip route add {{ node2.interfaces.eth0.ip_address }} via {{ node3.default_route }} || true
-          when: node_name == "node3" and node3.num_static_route == "2" and cloud_provider == "gcp"
-      when: node1.num_static_route is defined
+          when: node_name == "node3" and node3.num_static_route == "2"
+      when: node1.num_static_route is defined and cloud_provider == "gcp"
 
     - name: Image cleanup
       file:
@@ -258,6 +258,42 @@
           become_method: su
           become_flags: '-s /bin/bash'
           when: config_template.changed
+
+        - name: Configure image server public addresses
+          blockinfile:
+            path: /cvpi/conf/kubernetes/taskaction.yaml
+            block: |2
+                          -imageServer={{ node1.interfaces.eth0.nat_ip_address }}
+                          -imageServer={{ node2.interfaces.eth0.nat_ip_address }}
+                          -imageServer={{ node3.interfaces.eth0.nat_ip_address }}
+            insertafter: "            -imageServer=.*"
+            marker: "            # {mark} image server nat addresses"
+          when: node1.num_static_route is defined
+
+        - name:  Configure image server public addresses (single node)
+          file:
+            path: /cvpi/conf/kubernetes/taskaction.yaml
+            line: "            -imageServer={{ node1.interfaces.eth0.nat_ip_address }}"
+            insertafter: "            -imageServer=.*"
+          when: node1.num_static_route is not defined
+
+        - name: Configure cvp public addresses
+          blockinfile:
+            path: /cvpi/conf/kubernetes/taskaction.yaml
+            block: |2
+                          -cvaddrs={{ node1.interfaces.eth0.nat_ip_address }}:9910
+                          -cvaddrs={{ node2.interfaces.eth0.nat_ip_address }}:9910
+                          -cvaddrs={{ node3.interfaces.eth0.nat_ip_address }}:9910
+            insertafter: "            -cvaddrs=.*"
+            marker: "            # {mark} nat addresses"
+          when: node1.num_static_route is defined
+
+        - name:  Configure cvp public addresses (single node)
+          file:
+            path: /cvpi/conf/kubernetes/taskaction.yaml
+            line: "            -cvaddrs={{ node1.interfaces.eth0.nat_ip_address }}:9910"
+            insertafter: "            -cvaddrs=.*"
+          when: node1.num_static_route is not defined
 
     # This is to avoid "command ssh produced invalid JSON: invalid character 'b' after top-level value" errors
     # when refreshing the terraform state
