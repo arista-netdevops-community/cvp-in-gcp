@@ -183,6 +183,8 @@
             chdir: "{{ data_dir }}"
             creates: /cvpi/tools/cvpConfig.py
       rescue:
+        - name: Complete yum transactions
+          shell: yum-complete-transaction
         - name: Remove temporary directory
           shell: rm -Rf /tmp/cvp.install.*
         - name: Remove cvpi directory
