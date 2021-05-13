@@ -135,7 +135,7 @@ Mandatory variables are asked at runtime unless specified on the command line or
 
 ####  5.2. <a name='Optional'></a>Optional
 - **gcp_network**: The network in which clusters will be launched. Leaving this blank will create a new network.
-- **cvp_cluster_vmtype**: The type of instances used for CVP
+- **cvp_cluster_vmtype**: The type of instances used for CVP. Defaults to `custom-10-20480`.
 - **cvp_cluster_centos_version**: The Centos version used by CVP instances. If not provided we'll try to choose the appropriate one based on the CVP version that's being installed.
 - **cvp_cluster_public_management**: Whether the cluster UI and SSH ports (HTTPS/ssh) is publically accessible over the internet. Defaults to `false`.
 - **cvp_cluster_public_eos_communitation**: Whether the ports used by EOS devices to communicate to CVP are publically accessible over the internet. Defaults to `false`.

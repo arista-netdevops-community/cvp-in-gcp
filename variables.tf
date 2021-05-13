@@ -64,7 +64,7 @@ variable "cvp_cluster_vm_private_key" {
 variable "cvp_cluster_vm_type" {
   description = "The type of instances used for CVP"
   type        = string
-  default     = "custom-8-16384"
+  default     = "custom-10-20480"
 }
 variable "cvp_download_token" {
   description = "Arista Portal token used to download CVP."
@@ -83,6 +83,7 @@ variable "cvp_ingest_key" {
 variable "cvp_install_size" {
   description = "CVP installation size."
   type        = string
+
   default     = null
 
   validation {
