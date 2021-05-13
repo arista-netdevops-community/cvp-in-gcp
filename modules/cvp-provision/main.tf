@@ -150,7 +150,7 @@ resource "null_resource" "cluster_node_ansible" {
   }
 
   provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_SSH_COMMON_ARGS='-o ServerAliveInterval=30' ansible-playbook -i ${data.google_compute_instance.cluster_node[count.index].network_interface.0.access_config.0.nat_ip}, -u ${var.vm_admin_user} --private-key ${var.vm_private_ssh_key_path} --extra-vars \"cloud_provider=gcp cvp_version=${var.cvp_version} api_token=${var.cvp_download_token} cvp_size=${local.cvp_suggested_size} cvp_enable_advanced_login_options=${var.cvp_enable_advanced_login_options} node_name=node${(count.index+1)} cvp_config=${abspath(local_file.cvp_config[0].filename)} cvp_authorized_keys=${abspath(local_file.cvp_ssh_authorized_keys.filename)} cvp_private_key=${abspath(local_file.cvp_ssh_private.filename)}\" ansible/cvp-provision.yaml"
+    command = "ansible-playbook -i ${data.google_compute_instance.cluster_node[count.index].network_interface.0.access_config.0.nat_ip}, -u ${var.vm_admin_user} --private-key ${var.vm_private_ssh_key_path} --extra-vars \"cloud_provider=gcp cvp_version=${var.cvp_version} api_token=${var.cvp_download_token} cvp_size=${local.cvp_suggested_size} cvp_enable_advanced_login_options=${var.cvp_enable_advanced_login_options} node_name=node${(count.index+1)} cvp_config=${abspath(local_file.cvp_config[0].filename)} cvp_authorized_keys=${abspath(local_file.cvp_ssh_authorized_keys.filename)} cvp_private_key=${abspath(local_file.cvp_ssh_private.filename)}\" ansible/cvp-provision.yaml"
   }
 
   depends_on = [
