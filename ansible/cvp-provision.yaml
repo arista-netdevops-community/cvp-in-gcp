@@ -179,7 +179,7 @@
       block:
         - name: Install CVP
           shell:
-            cmd: bash {{ data_dir }}/cvp-rpm-installer-{{ cvp_version }} " " {{ cvp_size }}
+            cmd: rm -Rf /tmp/cvp.install* && bash {{ data_dir }}/cvp-rpm-installer-{{ cvp_version }} " " {{ cvp_size }}
             chdir: "{{ data_dir }}"
             creates: /cvpi
       rescue:
