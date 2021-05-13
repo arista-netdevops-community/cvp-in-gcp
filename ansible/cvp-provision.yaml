@@ -181,7 +181,7 @@
           shell:
             cmd: rm -Rf /tmp/cvp.install* && bash {{ data_dir }}/cvp-rpm-installer-{{ cvp_version }} " " {{ cvp_size }}
             chdir: "{{ data_dir }}"
-            creates: /cvpi
+            creates: /cvpi/tools/cvpConfig.py
       rescue:
         - name: Remove temporary directory
           shell: rm -Rf /tmp/cvp.install.*
