@@ -17,6 +17,11 @@ stages:
 #     - docker tag $CI_REGISTRY_IMAGE:$CI_PIPELINE_ID $CI_REGISTRY_IMAGE:latest
 #     - docker push $CI_REGISTRY_IMAGE:$CI_PIPELINE_ID
 #     - docker push $CI_REGISTRY_IMAGE:latest
+check for sensitive variables:
+  stage: test
+  image: alpine:latest
+  script:
+    - egrep -R '^cvp_download_token(.*)' *|grep -v PLACE_YOUR_PORTAL_TOKEN_HERE && false
 
 push to github:
   stage: deploy
@@ -36,7 +41,7 @@ push to github:
     - git config --global user.email "$GITLAB_USER_EMAIL"
   script:
     - git clone $GITHUB_PROJECT /tmp/$CI_PROJECT_NAME
-    - rsync -avz --exclude .git . /tmp/$CI_PROJECT_NAME
+    - rsync -avz --exclude=.git --exclude=.gitlab-ci.yml . /tmp/$CI_PROJECT_NAME
     - cd /tmp/$CI_PROJECT_NAME
     - git diff
     - git add .
