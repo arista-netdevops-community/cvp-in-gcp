@@ -20,7 +20,9 @@ stages:
 
 push to github:
   stage: deploy
-  image: alpine/git:latest
+  image: 
+    name: alpine/git:latest
+    entrypoint: /bin/sh
   environment:
     name: github
   before_script:
