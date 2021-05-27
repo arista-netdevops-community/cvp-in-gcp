@@ -1,0 +1,7 @@
+.gcloud
+.ssh
+.terraform
+.terraform.lock.hcl
+*.tfstate*
+plan.out
+modules/cvp-provision/dynamic/*
