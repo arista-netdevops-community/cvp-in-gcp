@@ -24,6 +24,7 @@ push to github:
     name: alpine/git:latest
     entrypoint: 
       - /bin/sh
+      - -c
   environment:
     name: github
   before_script:
