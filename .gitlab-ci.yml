@@ -32,4 +32,4 @@ push to github:
   after_script:
     - echo Done :)
   rules:
-    if: $CI_COMMIT_BRANCH == "github"
+    - if: $CI_COMMIT_BRANCH == "github"
