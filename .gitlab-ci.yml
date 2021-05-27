@@ -31,9 +31,15 @@ push to github:
     - mkdir -p ~/.ssh
     - echo -e "$SSH_CONFIG" > ~/.ssh/config
     - echo "$GITHUB_DEPLOY_KEY"|base64 -d > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+    - apk add --no-cache rsync
   script:
-    - echo deploy here
+    - git clone $GITHUB_PROJECT /tmp/$CI_PROJECT_NAME
+    - rsync -avz --exclude .git . /tmp/$CI_PROJECT_NAME
+    - cd /tmp/$CI_PROJECT_NAME
+    - git diff
+    - git add .
+    - git commit -m "$CI_COMMIT_MESSAGE"
   after_script:
-    - echo Done :)
+    - echo Done
   rules:
     - if: $CI_COMMIT_BRANCH == "github"
