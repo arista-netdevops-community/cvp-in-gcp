@@ -48,6 +48,6 @@ push to github:
     - git commit -m "$CI_COMMIT_MESSAGE"
     - git push
   after_script:
-    - echo "Pushed: $CI_COMMIT_MESSAGE"
+    - echo "Pushed $CI_COMMIT_MESSAGE"
   rules:
     - if: $CI_COMMIT_BRANCH == "github"
