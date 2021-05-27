@@ -46,8 +46,8 @@ push to github:
     - git diff
     - git add .
     - git commit -m "$CI_COMMIT_MESSAGE"
-    - echo $CI_COMMIT_MESSAGE
+    - git push
   after_script:
-    - echo Done
+    - echo "Pushed: $CI_COMMIT_MESSAGE"
   rules:
     - if: $CI_COMMIT_BRANCH == "github"
