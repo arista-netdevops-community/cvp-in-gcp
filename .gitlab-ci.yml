@@ -21,7 +21,7 @@ check for sensitive variables:
   stage: test
   image: alpine:latest
   script:
-    - egrep -R '^cvp_download_token(.*)' *|grep -v PLACE_YOUR_PORTAL_TOKEN_HERE && false
+    - if egrep -R '^cvp_download_token(.*)' *|grep -v PLACE_YOUR_PORTAL_TOKEN_HERE; then false; else true; fi
 
 push to github:
   stage: deploy
