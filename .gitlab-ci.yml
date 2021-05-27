@@ -46,6 +46,7 @@ push to github:
     - git diff
     - git add .
     - git commit -m "$CI_COMMIT_MESSAGE"
+    - echo $CI_COMMIT_MESSAGE
   after_script:
     - echo Done
   rules:
