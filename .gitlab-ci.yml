@@ -22,7 +22,7 @@ push to github:
   stage: deploy
   image: 
     name: alpine/git:latest
-    entrypoint: 
+    entrypoint:
       - /bin/sh
       - -c
   environment:
