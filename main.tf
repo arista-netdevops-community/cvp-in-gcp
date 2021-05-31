@@ -67,7 +67,7 @@ module "cvp_cluster" {
   vm_remove_data_disk              = var.cvp_cluster_remove_disks
 }
 module "cvp_provision_nodes" {
-  source = "./modules/cvp-provision"
+  source = "git::https://gitlab.aristanetworks.com/tac-team/cvp-ansible-provisioning.git"
 
   gcp_project_id   = var.gcp_project_id != null ? var.gcp_project_id : data.google_project.project.project_id
   gcp_region       = var.gcp_region

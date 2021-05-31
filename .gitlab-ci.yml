@@ -17,6 +17,15 @@ stages:
 #     - docker tag $CI_REGISTRY_IMAGE:$CI_PIPELINE_ID $CI_REGISTRY_IMAGE:latest
 #     - docker push $CI_REGISTRY_IMAGE:$CI_PIPELINE_ID
 #     - docker push $CI_REGISTRY_IMAGE:latest
+
+use github module URLs:
+  stage: build
+  image: alpine:latest
+  script:
+    - sed -i 's_https://gitlab.aristanetworks.com/tac-team/_https://github.com/arista-netdevops-community/_g' main.tf
+  rules:
+    - if: $CI_COMMIT_BRANCH == "github"
+
 check for sensitive variables:
   stage: test
   image: alpine:latest
@@ -25,7 +34,7 @@ check for sensitive variables:
 
 push to github:
   stage: deploy
-  image: 
+  image:
     name: alpine/git:latest
     entrypoint:
       - /bin/sh
