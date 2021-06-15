@@ -111,6 +111,11 @@ variable "cvp_version" {
   type        = string
   default     = "2020.3.1"
 }
+variable "cvp_vm_image" {
+  description = "Image used to launch VMs."
+  type        = string
+  default     = null
+}
 
 variable "eos_ip_range" {
   description = "IP ranges used by EOS devices that will be managed by the CVP cluster."

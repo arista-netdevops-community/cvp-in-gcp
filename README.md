@@ -145,6 +145,7 @@ Mandatory variables are asked at runtime unless specified on the command line or
 - **cvp_cluster_vm_password**: Password used to access instances in the CVP cluster.
 - **cvp_cluster_remove_disks**: Whether data disks created for the instances will be removed when destroying them. Defaults to `false`.
 - **cvp_version**: CVP version to install on the cluster. Defaults to `2020.3.1`.
+- **cvp_vm_image**: Image used to launch VMs. The module will try to guess the best image based on the CVP version if not provided.
 - **cvp_install_size**: CVP installation size. The module will try to guess the best installation size based on the VM size if not provided. Valid values are `demo`, `small`, `production` and `prod_wifi`.
 - **cvp_enable_advanced_login_options**: Whether to enable advanced login options on CVP. This is needed if you're planning to manage devices that are not reachable from the CVP network. Defaults to `false`.
 - **cvp_ingest_key**: Key that will be used to authenticate devices to CVP. Generates a random key by default.

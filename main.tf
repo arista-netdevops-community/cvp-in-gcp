@@ -22,7 +22,7 @@ locals {
         (var.cvp_version == "2020.1.0" || var.cvp_version == "2020.1.1" || var.cvp_version == "2020.1.2") ? "7.6" : (
           (var.cvp_version == "2020.2.0" || var.cvp_version == "2020.2.1" || var.cvp_version == "2020.2.2" || var.cvp_version == "2020.2.3" || var.cvp_version == "2020.2.4") ? "7.7" : (
             (var.cvp_version == "2020.3.0" || var.cvp_version == "2020.3.1") ? "7.7" : (
-              (var.cvp_version == "2021.1.0") ? "7.7" : "7.7"
+              (var.cvp_version == "2021.1.0" || var.cvp_version == "2021.1.1") ? "7.7" : "7.7"
             )
           )
         )
@@ -30,9 +30,9 @@ locals {
   }
   cvp_cluster = {
     vm_image = {
-      location = local.centos.version == "7.7" ? "http://storage.googleapis.com/centos_minimal/centos-minimal-gcp77.tar.gz" : (
+      location = var.cvp_vm_image != null ? var.cvp_vm_image : (local.centos.version == "7.7" ? "http://storage.googleapis.com/centos_minimal/centos-minimal-gcp77.tar.gz" : (
         var.cvp_cluster_centos_version == "7.6" ? "http://storage.googleapis.com/centos_minimal/centos-minimal-gcp76.tar.gz" : null
-      )
+      ))
     }
     zone = lower("${var.gcp_region}-${var.gcp_zone}")
   }
