@@ -73,6 +73,7 @@ module "cvp_provision_nodes" {
   gcp_region       = var.gcp_region
   gcp_network      = var.gcp_network != null ? var.gcp_network : google_compute_network.vpc_network[0].name
 
+  cloud_provider                    = "gcp"
   nodes                             = module.cvp_cluster.cluster_nodes
   vm_ssh_key                        = var.cvp_cluster_vm_key != null ? (fileexists(var.cvp_cluster_vm_key) == true ? file(var.cvp_cluster_vm_key) : null) : null
   vm_admin_user                     = var.cvp_cluster_vm_admin_user
