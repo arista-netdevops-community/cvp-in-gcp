@@ -133,8 +133,8 @@ variable "gcp_project_id" {
   type        = string
   default     = null
 }
+# TODO: Write a nice regex to validate region names
 variable "gcp_region" {
-  # TODO: Write a nice regex to validate region names
   description = "The region in which all GCP resources will be launched."
   type        = string
 }
