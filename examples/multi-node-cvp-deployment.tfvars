@@ -9,4 +9,4 @@ cvp_cluster_vm_key                   = "~/.ssh/id_rsa.pub"
 cvp_cluster_vm_private_key           = "~/.ssh/id_rsa"
 cvp_download_token                   = "PLACE_YOUR_PORTAL_TOKEN_HERE"
 cvp_enable_advanced_login_options    = true
-cvp_version                          = "2021.1.0"
+cvp_version                          = "2021.1.1"
