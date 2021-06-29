@@ -1,0 +1,5 @@
+version: ""
+
+sections:
+  hide: []
+  show: [inputs, outputs]

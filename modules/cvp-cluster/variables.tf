@@ -12,12 +12,13 @@ variable "gcp_network" {
   description = "The network in which clusters will be launched. Leaving this blank will create a new network."
   type        = string
 }
+variable "gcp_labels" {}
 
 variable "cluster_name" {
   type = string
 }
 variable "cluster_size" {
-  type =  string
+  type = string
 }
 variable "cluster_zone" {
   type    = string
@@ -30,7 +31,7 @@ variable "cluster_public_management" {
 
 variable "vm_admin_user" {
   type    = string
-  default = "cvpadmin"
+  default = "cvpsshadmin"
 }
 variable "vm_type" {
   type = string
@@ -51,6 +52,6 @@ variable "cluster_public_eos_communication" {
   default = false
 }
 variable "eos_ip_range" {
-  type    = list
+  type    = list(any)
   default = []
 }
