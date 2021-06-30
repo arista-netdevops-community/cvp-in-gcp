@@ -10,7 +10,7 @@
   script:
     - terraform apply -state=${CI_JOB_ID}.tfstate -var-file=$VAR_FILE -auto-approve
   after_script:
-    - terraform destroy -state=${CI_JOB_ID}.tfstate -var-file=$VAR_FILE -auto-approve
+    - terraform destroy -state=${CI_JOB_ID}.tfstate -var-file=$VAR_FILE -auto-approve -target=module.cvp_cluster
 
 stages:
   - validate
@@ -68,6 +68,9 @@ launch single-node cluster:
   variables:
     VAR_FILE: "examples/one-node-cvp-deployment.tfvars"
   <<: *gcp_terraform
+  artifacts:
+    paths:
+      - "*.tfstate"
 
 launch multi-node cluster:
   stage: test
@@ -78,7 +81,7 @@ launch multi-node cluster:
   <<: *gcp_terraform
   artifacts:
     paths:
-      - terraform.tfstate
+      - "*.tfstate"
 
 push updated documentation:
   stage: deploy
