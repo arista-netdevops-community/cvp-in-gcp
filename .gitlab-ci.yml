@@ -36,6 +36,10 @@ generate documentation:
     - GO111MODULE="on" go get github.com/terraform-docs/terraform-docs@v0.14.1
     - terraform-docs pretty .
     - terraform-docs markdown --output-file README.md .
+  artifacts:
+    paths:
+      - README.md
+    expire_in: 1 hour
 
 check for sensitive variables:
   stage: test
