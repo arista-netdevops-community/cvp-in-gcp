@@ -6,17 +6,18 @@
     - curl -s https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o /tmp/terraform.zip
     - unzip /tmp/terraform.zip -d /usr/bin/
     - gcloud auth activate-service-account --key-file=$GCP_CREDENTIALS
+    - export GOOGLE_APPLICATION_CREDENTIALS="$GCP_CREDENTIALS"
     - sed -i "s/\(cvp_download_token.*=\) \"PLACE_YOUR_PORTAL_TOKEN_HERE\"/\1 \"$ARISTA_API_TOKEN\"/g" $VAR_FILE
-  script:
     - terraform init
+  script:
     - terraform apply -var-file=$VAR_FILE -auto-approve
   after_script:
     - terraform destroy -var-file=$VAR_FILE -auto-approve
 
 stages:
   - build
-  - test
   - validate
+  - test
   - deploy
 
 # build docker image:
