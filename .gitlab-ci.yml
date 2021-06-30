@@ -1,8 +1,21 @@
+.gcp_terraform: &gcp_terraform
+  before_script:
+    - apt-get update && apt-get install -y unzip
+    - curl -s https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o /tmp/terraform.zip
+    - unzip /tmp/terraform.zip -d /usr/bin/
+    - gcloud auth activate-service-account --key-file=$GCP_CREDENTIALS
+    - sed -i "s/\(cvp_download_token.*=\) \"PLACE_YOUR_PORTAL_TOKEN_HERE\"/\1 \"$ARISTA_API_TOKEN\"/g" $VAR_FILE
+  script:
+    - terraform init
+    - terraform apply -var-file=$VAR_FILE -auto-approve
+  after_script:
+    - terraform destroy -var-file=$VAR_FILE -auto-approve
+
 stages:
   - build
   - test
+  - validate
   - deploy
-  - verify
 
 # build docker image:
 #   stage: build
@@ -42,10 +55,26 @@ generate documentation:
     expire_in: 1 hour
 
 check for sensitive variables:
-  stage: test
+  stage: validate
   image: alpine:latest
   script:
     - if egrep -R '^cvp_download_token(.*)' *|grep -v PLACE_YOUR_PORTAL_TOKEN_HERE; then false; else true; fi
+
+launch single-node cluster:
+  stage: test
+  image: google/cloud-sdk:latest
+  environment: cvp-tests
+  variables:
+    VAR_FILE: "examples/one-node-cvp-deployment.tfvars"
+  <<: *gcp_terraform
+
+launch multi-node cluster:
+  stage: test
+  image: google/cloud-sdk:latest
+  environment: cvp-tests
+  variables:
+    VAR_FILE: "examples/multi-node-cvp-deployment.tfvars"
+  <<: *gcp_terraform
 
 push updated documentation:
   stage: deploy
