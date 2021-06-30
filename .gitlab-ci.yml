@@ -10,7 +10,6 @@
   script:
     - terraform apply -state=${CI_JOB_ID}.tfstate -var-file=$VAR_FILE -auto-approve
   after_script:
-    - ls -l /builds/tac-team/cvp-in-gcp/dynamic/
     - terraform destroy -state=${CI_JOB_ID}.tfstate -var-file=$VAR_FILE -auto-approve
 
 stages:
