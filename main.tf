@@ -211,7 +211,7 @@ module "cvp_cluster" {
   cluster_size                     = var.cvp_cluster_size
   cluster_zone                     = local.cvp_cluster.zone
   cluster_public_management        = var.cvp_cluster_public_management
-  cluster_public_eos_communication = var.cvp_cluster_public_eos_communitation
+  cluster_public_eos_communication = var.cvp_cluster_public_eos_communication
   eos_ip_range                     = var.eos_ip_range
   vm_type                          = var.cvp_cluster_vm_type
   vm_image                         = local.cvp_cluster.vm_image.location

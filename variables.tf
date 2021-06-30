@@ -12,7 +12,7 @@ variable "cvp_cluster_name" {
   description = "The name of the CVP cluster."
   type        = string
 }
-variable "cvp_cluster_public_eos_communitation" {
+variable "cvp_cluster_public_eos_communication" {
   description = "Whether the ports used by EOS devices to communicate to CVP are publically accessible over the internet."
   type        = bool
   default     = false
@@ -25,6 +25,7 @@ variable "cvp_cluster_public_management" {
 variable "cvp_cluster_size" {
   description = "The number of nodes in the CVP cluster. Must be 1 or 3 nodes."
   type        = number
+  default     = 1
 
   validation {
     condition     = var.cvp_cluster_size == "1" || var.cvp_cluster_size == "3"
@@ -113,7 +114,7 @@ variable "cvp_vm_image" {
 }
 
 variable "eos_ip_range" {
-  description = "IP ranges used by EOS devices that will be managed by the CVP cluster. Should be set when cvp_cluster_public_eos_communitation is set to false, otherwise, devices won't be able to communicate and stream to CVP."
+  description = "IP ranges used by EOS devices that will be managed by the CVP cluster. Should be set when cvp_cluster_public_eos_communication is set to false, otherwise, devices won't be able to communicate and stream to CVP."
   type        = list(any)
   default     = []
 }
@@ -126,7 +127,6 @@ variable "gcp_network" {
 variable "gcp_project_id" {
   description = "The name of the GCP Project where all resources will be launched."
   type        = string
-  default     = null
 }
 # TODO: Write a nice regex to validate region names
 variable "gcp_region" {
