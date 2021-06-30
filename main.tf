@@ -40,10 +40,10 @@ locals {
   vm_commons = {
     ssh = {
       username         = var.cvp_cluster_vm_admin_user
-      private_key      = var.cvp_cluster_vm_private_key != null ? (fileexists(var.cvp_cluster_vm_private_key) == true ? file(var.cvp_cluster_vm_private_key) : null) : null
-      private_key_path = var.cvp_cluster_vm_private_key != null ? (fileexists(var.cvp_cluster_vm_private_key) == true ? var.cvp_cluster_vm_private_key : null) : null
-      public_key       = var.cvp_cluster_vm_key != null ? (fileexists(var.cvp_cluster_vm_key) == true ? file(var.cvp_cluster_vm_key) : null) : null
-      public_key_path  = var.cvp_cluster_vm_key != null ? (fileexists(var.cvp_cluster_vm_key) == true ? var.cvp_cluster_vm_key : null) : null
+      private_key      = var.cvp_cluster_vm_private_key != null ? (fileexists(var.cvp_cluster_vm_private_key) == true ? file(var.cvp_cluster_vm_private_key) : file(local_file.ssh_private_key.filename)) : file(local_file.ssh_private_key.filename)
+      private_key_path = var.cvp_cluster_vm_private_key != null ? (fileexists(var.cvp_cluster_vm_private_key) == true ? var.cvp_cluster_vm_private_key : abspath(local_file.ssh_private_key.filename)) : abspath(local_file.ssh_private_key.filename)
+      public_key       = var.cvp_cluster_vm_key != null ? (fileexists(var.cvp_cluster_vm_key) == true ? file(var.cvp_cluster_vm_key) : file(local_file.ssh_public_key.filename)) : file(local_file.ssh_public_key.filename)
+      public_key_path  = var.cvp_cluster_vm_key != null ? (fileexists(var.cvp_cluster_vm_key) == true ? var.cvp_cluster_vm_key : abspath(local_file.ssh_public_key.filename)) : abspath(local_file.ssh_public_key.filename)
     }
     bootstrap = {
       username = "root"
@@ -197,6 +197,23 @@ resource "google_compute_network" "vpc_network" {
   count   = var.gcp_network == null ? 1 : 0
   name    = "vpc-${var.cvp_cluster_name}"
   project = var.gcp_project_id != null ? var.gcp_project_id : data.google_project.project.project_id
+}
+
+resource "random_id" "prefix" {
+  byte_length = 8
+}
+resource "tls_private_key" "ssh" {
+  algorithm = "RSA"
+}
+resource "local_file" "ssh_public_key" {
+  filename        = "${path.module}/dynamic/${random_id.prefix.hex}-id_rsa.pub"
+  content         = tls_private_key.ssh.public_key_openssh
+  file_permission = "0644"
+}
+resource "local_file" "ssh_private_key" {
+  filename        = "${path.module}/dynamic/${random_id.prefix.hex}-id_rsa.pem"
+  content         = tls_private_key.ssh.private_key_pem
+  file_permission = "0600"
 }
 
 # TODO: Support instances in multiple zones
