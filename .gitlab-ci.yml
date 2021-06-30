@@ -34,6 +34,7 @@ generate documentation:
   image: golang:1.16
   script:
     - GO111MODULE="on" go get github.com/terraform-docs/terraform-docs@v0.14.1
+    - terraform-docs pretty .
     - terraform-docs markdown --output-file README.md .
 
 check for sensitive variables:
@@ -54,7 +55,7 @@ push updated documentation:
     - git config --global user.email "$GITLAB_USER_EMAIL"
   script:
     - git add README.md
-    - git commit -m "[skip ci] Updated documentation for $CI_COMMIT_SHORT_SHA"
+    - git diff-index --quiet HEAD || git commit -m "[skip ci] Updated documentation for $CI_COMMIT_SHORT_SHA"
     - git push
 
 push to github:
