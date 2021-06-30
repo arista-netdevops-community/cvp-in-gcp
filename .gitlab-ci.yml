@@ -44,10 +44,11 @@ check for sensitive variables:
 
 push updated documentation:
   stage: deploy
-  image: alpine/git:latest
-  entrypoint:
-      - /bin/sh
-      - -c
+  image: 
+    name: alpine/git:latest
+    entrypoint:
+        - /bin/sh
+        - -c
   before_script:
     - git config --global user.name "$GITLAB_USER_NAME"
     - git config --global user.email "$GITLAB_USER_EMAIL"
