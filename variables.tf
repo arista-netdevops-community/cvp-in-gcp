@@ -28,7 +28,7 @@ variable "cvp_cluster_size" {
   default     = 1
 
   validation {
-    condition     = var.cvp_cluster_size == "1" || var.cvp_cluster_size == "3"
+    condition     = var.cvp_cluster_size == "1" || var.cvp_cluster_size == "3" || var.cvp_cluster_size == null
     error_message = "The CVP cluster size must be 1 or 3 nodes."
   }
 }
@@ -125,7 +125,7 @@ variable "gcp_credentials" {
   default     = null
 
   validation {
-    condition     = var.gcp_credentials == null || filexists(var.gcp_credentials)
+    condition     = var.gcp_credentials == null || fileexists(var.gcp_credentials)
     error_message = "The credentials file does not exists."
   }
 }
