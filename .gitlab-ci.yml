@@ -8,10 +8,10 @@
     - sed -i "s/\(cvp_download_token.*=\) \"PLACE_YOUR_PORTAL_TOKEN_HERE\"/\1 \"$ARISTA_API_TOKEN\"/g" $VAR_FILE
     - terraform init
   script:
-    - terraform apply -var-file=$VAR_FILE -auto-approve
+    - terraform apply -state=${CI_JOB_ID}.tfstate -var-file=$VAR_FILE -auto-approve
   after_script:
     - ls -l /builds/tac-team/cvp-in-gcp/dynamic/
-    - terraform destroy -var-file=$VAR_FILE -auto-approve
+    - terraform destroy -state=${CI_JOB_ID}.tfstate -var-file=$VAR_FILE -auto-approve
 
 stages:
   - validate
