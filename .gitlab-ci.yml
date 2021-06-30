@@ -10,11 +10,12 @@
   script:
     - terraform apply -var-file=$VAR_FILE -auto-approve
   after_script:
+    - ls -l /builds/tac-team/cvp-in-gcp/dynamic/
     - terraform destroy -var-file=$VAR_FILE -auto-approve
 
 stages:
+  - validate
   - build
-  - document
   - test
   - deploy
 
@@ -56,7 +57,7 @@ generate documentation:
     expire_in: 1 hour
 
 check for sensitive variables:
-  stage: document
+  stage: validate
   image: alpine:latest
   script:
     - if egrep -R '^cvp_download_token(.*)' *|grep -v PLACE_YOUR_PORTAL_TOKEN_HERE; then false; else true; fi
@@ -78,7 +79,6 @@ launch multi-node cluster:
   environment: cvp-tests
   variables:
     VAR_FILE: "examples/multi-node-cvp-deployment.tfvars"
-    TF_VAR_gcp_credentials: $GCP_CREDENTIALS
   <<: *gcp_terraform
   artifacts:
     paths:
