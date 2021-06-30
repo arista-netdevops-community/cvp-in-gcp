@@ -188,7 +188,7 @@ locals {
     }
     zone = lower("${var.gcp_region}-${var.gcp_zone}")
   }
-  cvp_ingest_key    = var.cvp_ingest_key != null ? var.cvp_ingest_key : random_string.cvp_ingest_key.result
+  cvp_ingest_key = var.cvp_ingest_key != null ? var.cvp_ingest_key : random_string.cvp_ingest_key.result
 }
 
 # TODO: support auto_create_subnetworks=false
@@ -220,7 +220,7 @@ module "cvp_cluster" {
 }
 
 module "cvp_provision_nodes" {
-  source = "git::https://gitlab.aristanetworks.com/tac-team/cvp-ansible-provisioning.git"
+  source         = "git::https://gitlab.aristanetworks.com/tac-team/cvp-ansible-provisioning.git"
   cloud_provider = "gcp"
 
   nodes                             = module.cvp_cluster.nodes

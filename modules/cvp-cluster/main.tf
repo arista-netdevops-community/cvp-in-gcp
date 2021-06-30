@@ -6,9 +6,9 @@ locals {
   vm = {
     disk = {
       data = {
-        device     = "sdx"
-        type       = "pd-ssd"
-        size       = 1024
+        device = "sdx"
+        type   = "pd-ssd"
+        size   = 1024
       }
     }
   }
