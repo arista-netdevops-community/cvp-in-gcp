@@ -119,6 +119,16 @@ variable "eos_ip_range" {
   default     = []
 }
 
+variable "gcp_credentials" {
+  description = "JSON file containing GCP credentials. Leave blank to use gcloud authentication."
+  type        = string
+  default     = null
+
+  validation {
+    condition     = var.gcp_credentials == null || filexists(var.gcp_credentials)
+    error_message = "The credentials file does not exists."
+  }
+}
 variable "gcp_network" {
   description = "The network in which clusters will be launched. Leaving this blank will create a new network."
   type        = string
