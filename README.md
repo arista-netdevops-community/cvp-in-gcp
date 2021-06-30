@@ -137,9 +137,8 @@ Mandatory variables are asked at runtime unless specified on the command line or
 
 | Name | Description |
 |------|-------------|
-| <a name="output_cvp_cluster_nodes_ips"></a> [cvp\_cluster\_nodes\_ips](#output\_cvp\_cluster\_nodes\_ips) | n/a |
-| <a name="output_cvp_cluster_ssh_user"></a> [cvp\_cluster\_ssh\_user](#output\_cvp\_cluster\_ssh\_user) | n/a |
-| <a name="output_cvp_deviceadd_instructions"></a> [cvp\_deviceadd\_instructions](#output\_cvp\_deviceadd\_instructions) | n/a |
+| <a name="output_cvp_instances_credentials"></a> [cvp\_instances\_credentials](#output\_cvp\_instances\_credentials) | Public IP addresses and usernames of the cluster instances. |
+| <a name="output_cvp_terminattr_instructions"></a> [cvp\_terminattr\_instructions](#output\_cvp\_terminattr\_instructions) | Instructions to add EOS devices to the CVP cluster. |
 <!-- END_TF_DOCS -->
 
 ##  6. <a name='Examples'></a>Examples
