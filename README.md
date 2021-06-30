@@ -154,4 +154,3 @@ This command removes everything from the GCP project.
 [gcloud-install]: https://cloud.google.com/sdk/docs/install
 [terraform-download]: https://www.terraform.io/downloads.html
 [terraform-tfvars]: https://www.terraform.io/docs/language/values/variables.html#variable-definitions-tfvars-files
-[terraform-no-project]: https://github.com/hashicorp/terraform-provider-google/issues/4856
