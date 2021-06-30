@@ -69,9 +69,6 @@ launch single-node cluster:
   variables:
     VAR_FILE: "examples/one-node-cvp-deployment.tfvars"
   <<: *gcp_terraform
-  artifacts:
-    paths:
-      - terraform.tfstate
 
 launch multi-node cluster:
   stage: test
