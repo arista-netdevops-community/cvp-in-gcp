@@ -2,10 +2,9 @@
   before_script:
     - git config --global credential.helper store
     - echo "https://gitlab-ci-token:${GITLAB_INTEGRATION_TOKEN}@gitlab.aristanetworks.com" > ~/.git-credentials
-    - apt-get update && apt-get install -y unzip
+    - apt-get update && apt-get install -y unzip ansible
     - curl -s https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o /tmp/terraform.zip
     - unzip /tmp/terraform.zip -d /usr/bin/
-    - export TF_VAR_gcp_credentials=$GCP_CREDENTIALS
     - sed -i "s/\(cvp_download_token.*=\) \"PLACE_YOUR_PORTAL_TOKEN_HERE\"/\1 \"$ARISTA_API_TOKEN\"/g" $VAR_FILE
     - terraform init
   script:
@@ -69,6 +68,9 @@ launch single-node cluster:
   variables:
     VAR_FILE: "examples/one-node-cvp-deployment.tfvars"
   <<: *gcp_terraform
+  artifacts:
+    paths:
+      - terraform.tfstate
 
 launch multi-node cluster:
   stage: test
@@ -76,11 +78,15 @@ launch multi-node cluster:
   environment: cvp-tests
   variables:
     VAR_FILE: "examples/multi-node-cvp-deployment.tfvars"
+    TF_VAR_gcp_credentials: $GCP_CREDENTIALS
   <<: *gcp_terraform
+  artifacts:
+    paths:
+      - terraform.tfstate
 
 push updated documentation:
   stage: deploy
-  image: 
+  image:
     name: alpine/git:latest
     entrypoint:
         - /bin/sh
