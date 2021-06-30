@@ -128,6 +128,7 @@ Mandatory variables are asked at runtime unless specified on the command line or
 | <a name="input_cvp_version"></a> [cvp\_version](#input\_cvp\_version) | CVP version to install on the cluster. | `string` | `"2021.1.1"` | no |
 | <a name="input_cvp_vm_image"></a> [cvp\_vm\_image](#input\_cvp\_vm\_image) | Image used to launch VMs. The module will try to guess the best image based on the CVP version if not provided. | `string` | `null` | no |
 | <a name="input_eos_ip_range"></a> [eos\_ip\_range](#input\_eos\_ip\_range) | IP ranges used by EOS devices that will be managed by the CVP cluster. Should be set when cvp\_cluster\_public\_eos\_communication is set to false, otherwise, devices won't be able to communicate and stream to CVP. | `list(any)` | `[]` | no |
+| <a name="input_gcp_credentials"></a> [gcp\_credentials](#input\_gcp\_credentials) | JSON file containing GCP credentials. Leave blank to use gcloud authentication. | `string` | `null` | no |
 | <a name="input_gcp_network"></a> [gcp\_network](#input\_gcp\_network) | The network in which clusters will be launched. Leaving this blank will create a new network. | `string` | `null` | no |
 | <a name="input_gcp_project_id"></a> [gcp\_project\_id](#input\_gcp\_project\_id) | The name of the GCP Project where all resources will be launched. | `string` | n/a | yes |
 | <a name="input_gcp_region"></a> [gcp\_region](#input\_gcp\_region) | The region in which all GCP resources will be launched. Must be a valid zone within the desired gcp\_region. | `string` | n/a | yes |
