@@ -1,0 +1,13 @@
+v3.0
+  - Use instances instead of instance groups. This breaks compatibility
+    with previous versions of this module.
+  - Switch to new cvp-ansible-provisioner module format
+
+v2.1
+  - Add explicit support for CVP 2021.1.1
+
+v2.0
+  - Decouple ansible provisioner from the module
+
+v1.0
+  - Initial Release
