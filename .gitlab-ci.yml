@@ -15,7 +15,7 @@
 
 stages:
   - build
-  - validate
+  - document
   - test
   - deploy
 
@@ -57,7 +57,7 @@ generate documentation:
     expire_in: 1 hour
 
 check for sensitive variables:
-  stage: validate
+  stage: document
   image: alpine:latest
   script:
     - if egrep -R '^cvp_download_token(.*)' *|grep -v PLACE_YOUR_PORTAL_TOKEN_HERE; then false; else true; fi
