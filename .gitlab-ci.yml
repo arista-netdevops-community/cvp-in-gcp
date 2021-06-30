@@ -42,6 +42,20 @@ check for sensitive variables:
   script:
     - if egrep -R '^cvp_download_token(.*)' *|grep -v PLACE_YOUR_PORTAL_TOKEN_HERE; then false; else true; fi
 
+push updated documentation:
+  stage: deploy
+  image: alpine/git:latest
+  entrypoint:
+      - /bin/sh
+      - -c
+  before_script:
+    - git config --global user.name "$GITLAB_USER_NAME"
+    - git config --global user.email "$GITLAB_USER_EMAIL"
+  script:
+    - git add README.md
+    - git commit -m "[skip ci] Updated documentation for $CI_COMMIT_SHORT_SHA"
+    - git push
+
 push to github:
   stage: deploy
   image:

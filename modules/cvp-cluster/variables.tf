@@ -43,10 +43,6 @@ variable "vm_ssh_key" {
   type    = string
   default = null
 }
-variable "vm_remove_data_disk" {
-  type    = bool
-  default = false
-}
 variable "cluster_public_eos_communication" {
   type    = bool
   default = false

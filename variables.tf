@@ -1,5 +1,5 @@
 variable "cvp_cluster_centos_version" {
-  description = "The Centos version used by CVP instances."
+  description = "The Centos version used by CVP instances. If not provided we'll try to choose the appropriate one based on the CVP version that's being installed."
   type        = string
   default     = null
 
@@ -9,7 +9,7 @@ variable "cvp_cluster_centos_version" {
   }
 }
 variable "cvp_cluster_name" {
-  description = "The name of the CVP cluster"
+  description = "The name of the CVP cluster."
   type        = string
 }
 variable "cvp_cluster_public_eos_communitation" {
@@ -18,17 +18,12 @@ variable "cvp_cluster_public_eos_communitation" {
   default     = false
 }
 variable "cvp_cluster_public_management" {
-  description = "Whether the cluster management interface (https/ssh) is publically accessible over the internet."
-  type        = bool
-  default     = false
-}
-variable "cvp_cluster_remove_disks" {
-  description = "Whether data disks created for the instances will be removed when destroying them."
+  description = "Whether the cluster management interfaces (https/ssh) are publically accessible over the internet."
   type        = bool
   default     = false
 }
 variable "cvp_cluster_size" {
-  description = "The number of nodes in the CVP cluster"
+  description = "The number of nodes in the CVP cluster. Must be 1 or 3 nodes."
   type        = number
 
   validation {
@@ -37,19 +32,19 @@ variable "cvp_cluster_size" {
   }
 }
 variable "cvp_cluster_vm_admin_user" {
-  description = "User that will be used to connect to CVP cluster instances."
+  description = "User that will be used to connect to CVP cluster instances. Should be used in conjunction with cvp_cluster_vm_key."
   type        = string
   default     = "cvpsshadmin"
 
   validation {
-    condition     = var.cvp_cluster_vm_admin_user != "cvpadmin"
+    condition     = var.cvp_cluster_vm_admin_user != "cvpadmin" && var.cvp_cluster_vm_admin_user != "cvp"
     error_message = "The cvpadmin user is reserved and cannot be used."
   }
 }
 variable "cvp_cluster_vm_key" {
   description = "Public SSH key used to access instances in the CVP cluster."
   type        = string
-  default     = null
+  default     = "~/.ssh/id_rsa.pub"
 }
 variable "cvp_cluster_vm_password" {
   description = "Password used to access instances in the CVP cluster."
@@ -57,17 +52,17 @@ variable "cvp_cluster_vm_password" {
   default     = null
 }
 variable "cvp_cluster_vm_private_key" {
-  description = "Private SSH key used to access instances in the CVP cluster."
+  description = "Private SSH key used to access instances in the CVP cluster. This should match the public key provided on the cvp_cluster_vm_key variable."
   type        = string
-  default     = null
+  default     = "~/.ssh/id_rsa"
 }
 variable "cvp_cluster_vm_type" {
-  description = "The type of instances used for CVP"
+  description = "The type of instances used for CVP."
   type        = string
   default     = "custom-10-20480"
 }
 variable "cvp_download_token" {
-  description = "Arista Portal token used to download CVP."
+  description = "Arista Portal token used to download CVP. May be obtained on https://www.arista.com/en/users/profile under Portal Access."
   type        = string
 }
 variable "cvp_enable_advanced_login_options" {
@@ -109,16 +104,16 @@ variable "cvp_ntp" {
 variable "cvp_version" {
   description = "CVP version to install on the cluster."
   type        = string
-  default     = "2020.3.1"
+  default     = "2021.1.1"
 }
 variable "cvp_vm_image" {
-  description = "Image used to launch VMs."
+  description = "Image used to launch VMs. The module will try to guess the best image based on the CVP version if not provided."
   type        = string
   default     = null
 }
 
 variable "eos_ip_range" {
-  description = "IP ranges used by EOS devices that will be managed by the CVP cluster."
+  description = "IP ranges used by EOS devices that will be managed by the CVP cluster. Should be set when cvp_cluster_public_eos_communitation is set to false, otherwise, devices won't be able to communicate and stream to CVP."
   type        = list(any)
   default     = []
 }
@@ -135,7 +130,7 @@ variable "gcp_project_id" {
 }
 # TODO: Write a nice regex to validate region names
 variable "gcp_region" {
-  description = "The region in which all GCP resources will be launched."
+  description = "The region in which all GCP resources will be launched. Must be a valid zone within the desired gcp_region."
   type        = string
 }
 variable "gcp_zone" {

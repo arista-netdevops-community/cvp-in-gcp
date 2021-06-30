@@ -217,7 +217,6 @@ module "cvp_cluster" {
   vm_image                         = local.cvp_cluster.vm_image.location
   vm_ssh_key                       = fileexists(var.cvp_cluster_vm_key) == true ? "${split(" ", file(var.cvp_cluster_vm_key))[0]} ${split(" ", file(var.cvp_cluster_vm_key))[1]}" : null
   vm_admin_user                    = var.cvp_cluster_vm_admin_user
-  vm_remove_data_disk              = var.cvp_cluster_remove_disks
 }
 
 module "cvp_provision_nodes" {

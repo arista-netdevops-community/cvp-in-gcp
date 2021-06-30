@@ -9,7 +9,6 @@ locals {
         device     = "sdx"
         type       = "pd-ssd"
         size       = 1024
-        autoremove = var.vm_remove_data_disk
       }
     }
   }

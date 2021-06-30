@@ -2,6 +2,7 @@ v3.0
   - Use instances instead of instance groups. This breaks compatibility
     with previous versions of this module.
   - Switch to new cvp-ansible-provisioner module format
+  - Removed cvp_cluster_remove_disks option. This will be replaced by an option to create snapshots before removal in a future release.
 
 v2.1
   - Add explicit support for CVP 2021.1.1
