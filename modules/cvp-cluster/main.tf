@@ -14,10 +14,6 @@ locals {
   }
 }
 
-provider "google" {
-  region = var.gcp_region
-}
-
 resource "google_compute_image" "centos" {
   name    = "cvp-centos-${var.cluster_name}"
   project = data.google_project.project.project_id
