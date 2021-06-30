@@ -5,7 +5,7 @@ terraform {
 
 provider "google" {
   region      = var.gcp_region
-  credentials = filexists(var.gcp_credentials) ? var.gcp_credentials : null
+  credentials = fileexists(var.gcp_credentials) ? var.gcp_credentials : null
 }
 
 data "google_project" "project" {
