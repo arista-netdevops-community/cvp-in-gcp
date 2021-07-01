@@ -2,7 +2,7 @@
   before_script:
     - git config --global credential.helper store
     - echo "https://gitlab-ci-token:${GITLAB_INTEGRATION_TOKEN}@gitlab.aristanetworks.com" > ~/.git-credentials
-    - apt-get update && apt-get install -y unzip ansible
+    - apt-get update && apt-get install -y unzip ansible retry
     - curl -s https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o /tmp/terraform.zip
     - unzip /tmp/terraform.zip -d /usr/bin/
     - sed -i "s/\(cvp_download_token.*=\) \"PLACE_YOUR_PORTAL_TOKEN_HERE\"/\1 \"$ARISTA_API_TOKEN\"/g" $VAR_FILE
@@ -10,7 +10,7 @@
   script:
     - terraform apply -state=${CI_JOB_ID}.tfstate -var-file=$VAR_FILE -auto-approve
   after_script:
-    - false; while [ $? != 0 ]; do terraform destroy -state=${CI_JOB_ID}.tfstate -var-file=$VAR_FILE -auto-approve; done
+    - retry -t 3 -- terraform destroy -state=${CI_JOB_ID}.tfstate -var-file=$VAR_FILE -auto-approve
 
 stages:
   - validate
