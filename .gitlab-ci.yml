@@ -1,4 +1,4 @@
-.gcp_terraform: &gcp_terraform
+.run_terraform: &run_terraform
   before_script:
     - git config --global credential.helper store
     - echo "https://gitlab-ci-token:${GITLAB_INTEGRATION_TOKEN}@gitlab.aristanetworks.com" > ~/.git-credentials
@@ -10,7 +10,7 @@
   script:
     - terraform apply -state=${CI_JOB_ID}.tfstate -var-file=$VAR_FILE -auto-approve
   after_script:
-    - terraform destroy -state=${CI_JOB_ID}.tfstate -var-file=$VAR_FILE -auto-approve -target=module.cvp_cluster
+    - false; while [ $? != 0 ]; do terraform destroy -state=${CI_JOB_ID}.tfstate -var-file=$VAR_FILE -auto-approve; done
 
 stages:
   - validate
@@ -67,7 +67,7 @@ launch single-node cluster:
   environment: cvp-tests
   variables:
     VAR_FILE: "examples/one-node-cvp-deployment.tfvars"
-  <<: *gcp_terraform
+  <<: *run_terraform
   artifacts:
     paths:
       - "*.tfstate"
@@ -78,7 +78,7 @@ launch multi-node cluster:
   environment: cvp-tests
   variables:
     VAR_FILE: "examples/multi-node-cvp-deployment.tfvars"
-  <<: *gcp_terraform
+  <<: *run_terraform
   artifacts:
     paths:
       - "*.tfstate"
