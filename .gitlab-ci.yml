@@ -16,6 +16,7 @@ stages:
   - validate
   - build
   - test
+  - document
   - deploy
 
 # build docker image:
@@ -32,6 +33,12 @@ stages:
 #     - docker push $CI_REGISTRY_IMAGE:$CI_PIPELINE_ID
 #     - docker push $CI_REGISTRY_IMAGE:latest
 
+check for sensitive variables:
+  stage: validate
+  image: alpine:latest
+  script:
+    - if egrep -R '^cvp_download_token(.*)' *|grep -v PLACE_YOUR_PORTAL_TOKEN_HERE; then false; else true; fi
+
 use github module URLs:
   stage: build
   image: alpine:latest
@@ -44,7 +51,7 @@ use github module URLs:
     - if: $CI_COMMIT_BRANCH == "github"
 
 generate documentation:
-  stage: build
+  stage: document
   image: golang:1.16
   script:
     - GO111MODULE="on" go get github.com/terraform-docs/terraform-docs@v0.14.1
@@ -54,12 +61,6 @@ generate documentation:
     paths:
       - README.md
     expire_in: 1 hour
-
-check for sensitive variables:
-  stage: validate
-  image: alpine:latest
-  script:
-    - if egrep -R '^cvp_download_token(.*)' *|grep -v PLACE_YOUR_PORTAL_TOKEN_HERE; then false; else true; fi
 
 launch single-node cluster:
   stage: test
