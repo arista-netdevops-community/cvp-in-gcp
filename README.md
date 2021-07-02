@@ -11,6 +11,8 @@ Templates to launch fully functional CVP clusters in GCP.
 * 3. [Quickstart](#Quickstart)
 * 4. [Adding EOS devices](#AddingEOSdevices)
 * 5. [Variables](#Variables)
+	* 5.1. [Inputs](#Inputs)
+	* 5.2. [Outputs](#Outputs)
 * 6. [Examples](#Examples)
 	* 6.1. [Using a `.tfvars` file](#Usinga.tfvarsfile)
 	* 6.2. [Using command-line variables:](#Usingcommand-linevariables:)
@@ -103,9 +105,9 @@ exec /usr/bin/TerminAttr -ingestgrpcurl=34.71.81.254:9910 -cvcompression=gzip -i
 The `exec` configuration can be copy-pasted and should be usable in most scenarios.
 
 ##  5. <a name='Variables'></a>Variables
-Mandatory variables are asked at runtime unless specified on the command line or using a [.tfvars file](terraform-tfvars), recommended in most cases.
+Required variables are asked at runtime unless specified on the command line. Using a [.tfvars file](terraform-tfvars) is recommended in most cases.
 <!-- BEGIN_TF_DOCS -->
-## Inputs
+###  5.1. <a name='Inputs'></a>Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
@@ -134,7 +136,7 @@ Mandatory variables are asked at runtime unless specified on the command line or
 | <a name="input_gcp_region"></a> [gcp\_region](#input\_gcp\_region) | The region in which all GCP resources will be launched. Must be a valid zone within the desired gcp\_region. | `string` | n/a | yes |
 | <a name="input_gcp_zone"></a> [gcp\_zone](#input\_gcp\_zone) | The zone in which all GCP resources will be launched. | `string` | n/a | yes |
 
-## Outputs
+###  5.2. <a name='Outputs'></a>Outputs
 
 | Name | Description |
 |------|-------------|
