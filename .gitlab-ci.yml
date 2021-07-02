@@ -72,6 +72,8 @@ launch single-node cluster:
   artifacts:
     paths:
       - "*.tfstate"
+  rules:
+    - if: $CI_COMMIT_MESSAGE !~ /^\[DOC\]/
 
 launch multi-node cluster:
   stage: test
@@ -83,6 +85,8 @@ launch multi-node cluster:
   artifacts:
     paths:
       - "*.tfstate"
+  rules:
+    - if: $CI_COMMIT_MESSAGE !~ /^\[DOC\]/
 
 push updated documentation:
   stage: deploy
