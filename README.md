@@ -136,7 +136,7 @@ Required variables are asked at runtime unless specified on the command line. Us
 | <a name="input_gcp_region"></a> [gcp\_region](#input\_gcp\_region) | The region in which all GCP resources will be launched. Must be a valid zone within the desired gcp\_region. | `string` | n/a | yes |
 | <a name="input_gcp_zone"></a> [gcp\_zone](#input\_gcp\_zone) | The zone in which all GCP resources will be launched. | `string` | n/a | yes |
 
-### Outputs
+#### Outputs
 
 | Name | Description |
 |------|-------------|
@@ -145,20 +145,6 @@ Required variables are asked at runtime unless specified on the command line. Us
 <!-- END_TF_DOCS -->
 
 ##  6. <a name='Examples'></a>Examples
-<!-- ###  5.1. <a name='UsingtheDockerimage'></a>Using the Docker image
-The docker image contains all dependencies pre-installed. It uses the same general syntax as the `.tfvars` method:
-
-```bash
-$ docker run --rm -ti -v $HOME/.ssh:/cvp/.ssh -v $(pwd):/cvp test apply -var-file=examples/one-node-cvp-deployment.tfvars
-```
-
-Some directories can be mounted if you wish to use pre-existing configuration:
-- **-v $HOME/.ssh:/cvp/.ssh**: Path to existing SSH keys.
-- **-v $HOME/.config/gcloud:/cvp/.gcloud**: Path to an existing gcloud configuration
-
-If those directories are not mounted new configurations will be generated.
--->
-
 ###  6.1. <a name='Usinga.tfvarsfile'></a>Using a `.tfvars` file
 **Note**: Before running this please replace the `gcp_project_id` variable in the provided example file with the correct name of your project and `cvp_download_token` with your Arista Portal token.
 
