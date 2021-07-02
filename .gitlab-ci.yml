@@ -64,7 +64,7 @@ generate documentation:
 
 launch single-node cluster:
   stage: test
-  image: google/cloud-sdk:latest
+  image: $TERRAFORM_TEST_IMAGE
   environment: cvp-tests
   variables:
     VAR_FILE: "examples/one-node-cvp-deployment.tfvars"
@@ -77,7 +77,7 @@ launch single-node cluster:
 
 launch multi-node cluster:
   stage: test
-  image: google/cloud-sdk:latest
+  image: $TERRAFORM_TEST_IMAGE
   environment: cvp-tests
   variables:
     VAR_FILE: "examples/multi-node-cvp-deployment.tfvars"
