@@ -136,7 +136,7 @@ Required variables are asked at runtime unless specified on the command line. Us
 | <a name="input_gcp_region"></a> [gcp\_region](#input\_gcp\_region) | The region in which all GCP resources will be launched. Must be a valid zone within the desired gcp\_region. | `string` | n/a | yes |
 | <a name="input_gcp_zone"></a> [gcp\_zone](#input\_gcp\_zone) | The zone in which all GCP resources will be launched. | `string` | n/a | yes |
 
-#### Outputs
+### Outputs
 
 | Name | Description |
 |------|-------------|
