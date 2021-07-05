@@ -155,12 +155,6 @@ Required variables are asked at runtime unless specified on the command line. Us
 $ terraform apply -var-file=examples/one-node-cvp-deployment.tfvars
 ```
 
-###  6.2. <a name='Usingcommand-linevariables:'></a>Using command-line variables:
-
-```bash
-$ terraform apply -var gcp_project_id=myproject -var gcp_region=us-central1 -var gcp_zone=a -var cvp_cluster_name=my-cvp-cluster -var cvp_cluster_size=1 -var cvp_cluster_public_management=true -var cvp_cluster_vm_key="~/.ssh/id_rsa.pub" -var cvp_cluster_vm_private_key="~/.ssh/id_rsa" -var cvp_download_token="PLACE_YOUR_PORTAL_TOKEN_HERE"
-```
-
 ##  7. <a name='Removingtheenvironment'></a>Removing the environment
 In order to remove the environment you launched you can run the following command:
 
