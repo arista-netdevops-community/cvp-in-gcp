@@ -30,7 +30,7 @@ Install terraform, ansible, gcloud SDK and use one of the provided `.tfvars` exa
 
 ##  2. <a name='Requisites'></a>Requisites
 ###  2.1. <a name='terraform'></a>terraform
-This module is tested with terraform ``, but should work with any terraform version above the version shown below. You can [download it from the official website][terraform-download].
+This module is tested with terraform `1.0.1`, but should work with any terraform version above the version shown below. You can [download it from the official website][terraform-download].
 
 Terraform is distributed as a single binary. Install Terraform by unzipping it and moving it to a directory included in your system's `PATH`.
 
