@@ -5,7 +5,7 @@ Templates to launch fully functional CVP clusters in GCP.
 <!-- vscode-markdown-toc -->
 * 1. [TLDR](#TLDR)
 * 2. [Requisites](#Requisites)
-	* 2.1. [terraform >= 0.13](#terraform0.13)
+	* 2.1. [terraform](#terraform)
 	* 2.2. [Google Cloud SDK](#GoogleCloudSDK)
 	* 2.3. [ansible](#ansible)
 * 3. [Quickstart](#Quickstart)
@@ -29,10 +29,13 @@ Templates to launch fully functional CVP clusters in GCP.
 Install terraform, ansible, gcloud SDK and use one of the provided `.tfvars` examples.
 
 ##  2. <a name='Requisites'></a>Requisites
-###  2.1. <a name='terraform0.13'></a>terraform >= 0.13
-This module is tested with terraform `1.0.1`, but should work with any terraform version above 0.13. You can [download it from the official website][terraform-download].
+###  2.1. <a name='terraform'></a>terraform
+This module is tested with terraform `TERRAFORM_VERSION`, but should work with any terraform version above the version shown below. You can [download it from the official website][terraform-download].
 
 Terraform is distributed as a single binary. Install Terraform by unzipping it and moving it to a directory included in your system's `PATH`.
+
+<!-- BEGIN_TF_REQS -->
+<!-- END_TF_REQS -->
 
 ###  2.2. <a name='GoogleCloudSDK'></a>Google Cloud SDK
 You must have the Google Cloud SDK installed and authenticated. For installation details please see [here][gcloud-install]. If asked `Optional. Use the install script to add Cloud SDK tools to your PATH` reply `Yes`
@@ -107,7 +110,7 @@ The `exec` configuration can be copy-pasted and should be usable in most scenari
 ##  5. <a name='Variables'></a>Variables
 Required variables are asked at runtime unless specified on the command line. Using a [.tfvars file](terraform-tfvars) is recommended in most cases.
 <!-- BEGIN_TF_DOCS -->
-### Inputs
+###  5.1. <a name='Inputs'></a>Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
@@ -136,7 +139,7 @@ Required variables are asked at runtime unless specified on the command line. Us
 | <a name="input_gcp_region"></a> [gcp\_region](#input\_gcp\_region) | The region in which all GCP resources will be launched. Must be a valid zone within the desired gcp\_region. | `string` | n/a | yes |
 | <a name="input_gcp_zone"></a> [gcp\_zone](#input\_gcp\_zone) | The zone in which all GCP resources will be launched. | `string` | n/a | yes |
 
-### Outputs
+###  5.2. <a name='Outputs'></a>Outputs
 
 | Name | Description |
 |------|-------------|
