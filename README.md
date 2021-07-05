@@ -30,11 +30,32 @@ Install terraform, ansible, gcloud SDK and use one of the provided `.tfvars` exa
 
 ##  2. <a name='Requisites'></a>Requisites
 ###  2.1. <a name='terraform'></a>terraform
-This module is tested with terraform `TERRAFORM_VERSION`, but should work with any terraform version above the version shown below. You can [download it from the official website][terraform-download].
+This module is tested with terraform ``, but should work with any terraform version above the version shown below. You can [download it from the official website][terraform-download].
 
 Terraform is distributed as a single binary. Install Terraform by unzipping it and moving it to a directory included in your system's `PATH`.
 
 <!-- BEGIN_TF_REQS -->
+#### Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.14 |
+
+#### Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_google"></a> [google](#provider\_google) | 3.74.0 |
+| <a name="provider_local"></a> [local](#provider\_local) | 2.1.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.1.0 |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | 3.1.0 |
+
+#### Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_cvp_cluster"></a> [cvp\_cluster](#module\_cvp\_cluster) | ./modules/cvp-cluster | n/a |
+| <a name="module_cvp_provision_nodes"></a> [cvp\_provision\_nodes](#module\_cvp\_provision\_nodes) | git::https://gitlab.aristanetworks.com/tac-team/cvp-ansible-provisioning.git | n/a |
 <!-- END_TF_REQS -->
 
 ###  2.2. <a name='GoogleCloudSDK'></a>Google Cloud SDK
@@ -110,7 +131,7 @@ The `exec` configuration can be copy-pasted and should be usable in most scenari
 ##  5. <a name='Variables'></a>Variables
 Required variables are asked at runtime unless specified on the command line. Using a [.tfvars file](terraform-tfvars) is recommended in most cases.
 <!-- BEGIN_TF_DOCS -->
-###  5.1. <a name='Inputs'></a>Inputs
+### Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
@@ -139,7 +160,7 @@ Required variables are asked at runtime unless specified on the command line. Us
 | <a name="input_gcp_region"></a> [gcp\_region](#input\_gcp\_region) | The region in which all GCP resources will be launched. Must be a valid zone within the desired gcp\_region. | `string` | n/a | yes |
 | <a name="input_gcp_zone"></a> [gcp\_zone](#input\_gcp\_zone) | The zone in which all GCP resources will be launched. | `string` | n/a | yes |
 
-###  5.2. <a name='Outputs'></a>Outputs
+### Outputs
 
 | Name | Description |
 |------|-------------|
