@@ -85,9 +85,6 @@ validate terraform 0.14:
   stage: test
   image:
     name: $TERRAFORM_TEST_IMAGE
-    entrypoint:
-      - /bin/bash
-      - -c
   environment: cvp-tests
   variables:
     VAR_FILE: "examples/one-node-cvp-deployment.tfvars"
@@ -101,9 +98,6 @@ validate terraform 0.15:
   stage: test
   image:
     name: $TERRAFORM_TEST_IMAGE
-    entrypoint:
-      - /bin/bash
-      - -c
   environment: cvp-tests
   variables:
     VAR_FILE: "examples/one-node-cvp-deployment.tfvars"
@@ -117,9 +111,6 @@ validate target terraform:
   stage: test
   image:
     name: $TERRAFORM_TEST_IMAGE
-    entrypoint:
-      - /bin/bash
-      - -c
   environment: cvp-tests
   variables:
     VAR_FILE: "examples/one-node-cvp-deployment.tfvars"
