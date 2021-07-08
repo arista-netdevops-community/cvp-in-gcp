@@ -202,7 +202,7 @@ push to github:
     - git config --global user.email "$GITLAB_USER_EMAIL"
   script:
     - git clone $GITHUB_PROJECT /tmp/$CI_PROJECT_NAME
-    - rsync -avz --exclude=.git --exclude=.gitlab-ci.yml . /tmp/$CI_PROJECT_NAME
+    - rsync -avz --delete --exclude=.git --exclude=.gitlab-ci.yml . /tmp/$CI_PROJECT_NAME
     - cd /tmp/$CI_PROJECT_NAME
     - git diff
     - git add .
