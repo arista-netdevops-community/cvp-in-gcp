@@ -78,7 +78,7 @@ use github module URLs:
     paths:
       - main.tf
       - README.md
-    expire_in: 1 hour
+    expire_in: 24 hours
 
 generate documentation:
   stage: document
@@ -93,7 +93,7 @@ generate documentation:
     paths:
       - README.md
       - .terraform.lock.hcl
-    expire_in: 1 hour
+    expire_in: 24 hours
 
 validate terraform 0.14:
   stage: test
@@ -143,7 +143,7 @@ launch single-node cluster:
     paths:
       - "*.tfstate"
       - .terraform.lock.hcl
-    expire_in: 1 hour
+    expire_in: 24 hours
   rules:
     - if: $CI_COMMIT_TAG || $CI_COMMIT_BRANCH == "github" || $FORCE_LAUNCH || $FORCE_LAUNCH_SINGLE
 
@@ -158,7 +158,7 @@ launch multi-node cluster:
     paths:
       - "*.tfstate"
       - .terraform.lock.hcl
-    expire_in: 1 hour
+    expire_in: 24 hours
   rules:
     - if: $CI_COMMIT_TAG || $CI_COMMIT_BRANCH == "github" || $FORCE_LAUNCH || $FORCE_LAUNCH_MULTI
 
