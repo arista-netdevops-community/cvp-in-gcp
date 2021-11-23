@@ -20,8 +20,8 @@ resource "random_string" "cvp_ingest_key" {
 locals {
   gcp = {
     labels = {
-      cvp-in-gcp_source  = "github"
-      cvp-in-gcp_version = "a4cf1841"
+      cvp-in-gcp_source  = "gitlab"
+      cvp-in-gcp_version = "development_release"
     }
     image = {
       centos = {
@@ -29,7 +29,9 @@ locals {
           (var.cvp_version == "2020.1.0" || var.cvp_version == "2020.1.1" || var.cvp_version == "2020.1.2") ? "7.6" : (
             (var.cvp_version == "2020.2.0" || var.cvp_version == "2020.2.1" || var.cvp_version == "2020.2.2" || var.cvp_version == "2020.2.3" || var.cvp_version == "2020.2.4") ? "7.7" : (
               (var.cvp_version == "2020.3.0" || var.cvp_version == "2020.3.1") ? "7.7" : (
-                (var.cvp_version == "2021.1.0" || var.cvp_version == "2021.1.1") ? "7.7" : "7.7"
+                (var.cvp_version == "2021.1.0" || var.cvp_version == "2021.1.1") ? "7.7" : (
+                  (var.cvp_version == "2021.2.0") ? "7.9" : "7.7"
+                )
               )
             )
           )
@@ -207,9 +209,13 @@ locals {
   ])
   cvp_cluster = {
     vm_image = {
-      location = var.cvp_vm_image != null ? var.cvp_vm_image : (local.gcp.image.centos.version == "7.7" ? "http://storage.googleapis.com/centos_minimal/centos-minimal-gcp77.tar.gz" : (
-        var.cvp_cluster_centos_version == "7.6" ? "http://storage.googleapis.com/centos_minimal/centos-minimal-gcp76.tar.gz" : null
-      ))
+      location = var.cvp_vm_image != null ? var.cvp_vm_image : (
+        local.gcp.image.centos.version == "7.9" ? "https://storage.googleapis.com/cvp-tests/cvp-2021-2-0-tac.tar.gz" : (
+          local.gcp.image.centos.version == "7.7" ? "http://storage.googleapis.com/centos_minimal/centos-minimal-gcp77.tar.gz" : (
+            var.cvp_cluster_centos_version == "7.6" ? "http://storage.googleapis.com/centos_minimal/centos-minimal-gcp76.tar.gz" : null
+          )
+        )
+      )
     }
     zone = lower("${var.gcp_region}-${var.gcp_zone}")
   }
@@ -262,7 +268,7 @@ module "cvp_cluster" {
 }
 
 module "cvp_provision_nodes" {
-  source         = "git::https://github.com/arista-netdevops-community/cvp-ansible-provisioning.git?ref=v3.0.2"
+  source         = "git::https://gitlab.aristanetworks.com/tac-team/cvp-ansible-provisioning.git?ref=v3.0.2"
   cloud_provider = "gcp"
 
   vm                                = local.vm
