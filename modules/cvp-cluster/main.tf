@@ -52,7 +52,7 @@ resource "google_compute_instance" "cvp_nodes" {
     auto_delete = true
     initialize_params {
       image = google_compute_image.centos.self_link
-      size  = 35
+      size  = var.vm_disk_size
     }
   }
   attached_disk {

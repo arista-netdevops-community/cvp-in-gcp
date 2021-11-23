@@ -33,6 +33,10 @@ variable "vm_admin_user" {
   type    = string
   default = "cvpsshadmin"
 }
+variable "vm_disk_size" {
+  type    = number
+  default = 35
+}
 variable "vm_type" {
   type = string
 }

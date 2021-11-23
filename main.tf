@@ -262,6 +262,7 @@ module "cvp_cluster" {
   cluster_public_eos_communication = var.cvp_cluster_public_eos_communication
   eos_ip_range                     = var.eos_ip_range
   vm_type                          = var.cvp_cluster_vm_type
+  vm_disk_size                     = var.cvp_cluster_vm_disk_size
   vm_image                         = local.cvp_cluster.vm_image.location
   vm_ssh_key                       = fileexists(var.cvp_cluster_vm_key) ? "${split(" ", file(var.cvp_cluster_vm_key))[0]} ${split(" ", file(var.cvp_cluster_vm_key))[1]}" : (fileexists(abspath(local_file.ssh_public_key.filename)) ? "${split(" ", file(abspath(local_file.ssh_public_key.filename)))[0]} ${split(" ", file(abspath(local_file.ssh_public_key.filename)))[1]}" : null)
   vm_admin_user                    = var.cvp_cluster_vm_admin_user

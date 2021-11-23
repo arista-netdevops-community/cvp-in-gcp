@@ -42,6 +42,11 @@ variable "cvp_cluster_vm_admin_user" {
     error_message = "The cvpadmin user is reserved and cannot be used."
   }
 }
+variable "cvp_cluster_vm_disk_size" {
+  description = "The root disk size of the VMs. This must be increased to 40 if running 2021.2.0."
+  type        = number
+  default     = 35
+}
 variable "cvp_cluster_vm_key" {
   description = "Public SSH key used to access instances in the CVP cluster."
   type        = string
