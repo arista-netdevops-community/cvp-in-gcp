@@ -20,8 +20,8 @@ resource "random_string" "cvp_ingest_key" {
 locals {
   gcp = {
     labels = {
-      cvp-in-gcp_source  = "gitlab"
-      cvp-in-gcp_version = "development_release"
+      cvp-in-gcp_source  = "github"
+      cvp-in-gcp_version = "7f070c83"
     }
     image = {
       centos = {
@@ -269,7 +269,7 @@ module "cvp_cluster" {
 }
 
 module "cvp_provision_nodes" {
-  source         = "git::https://gitlab.aristanetworks.com/tac-team/cvp-ansible-provisioning.git?ref=v3.0.2"
+  source         = "git::https://github.com/arista-netdevops-community/cvp-ansible-provisioning.git?ref=v3.0.2"
   cloud_provider = "gcp"
 
   vm                                = local.vm
