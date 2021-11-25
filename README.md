@@ -55,7 +55,7 @@ Terraform is distributed as a single binary. Install Terraform by unzipping it a
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_cvp_cluster"></a> [cvp\_cluster](#module\_cvp\_cluster) | ./modules/cvp-cluster | n/a |
-| <a name="module_cvp_provision_nodes"></a> [cvp\_provision\_nodes](#module\_cvp\_provision\_nodes) | git::https://github.com/arista-netdevops-community/cvp-ansible-provisioning.git | v3.0.2 |
+| <a name="module_cvp_provision_nodes"></a> [cvp\_provision\_nodes](#module\_cvp\_provision\_nodes) | git::https://gitlab.aristanetworks.com/tac-team/cvp-ansible-provisioning.git | v3.0.6 |
 <!-- END_TF_REQS -->
 
 ###  2.2. <a name='GoogleCloudSDK'></a>Google Cloud SDK
@@ -160,6 +160,7 @@ Required variables are asked at runtime unless specified on the command line. Us
 | <a name="input_cvp_cluster_public_management"></a> [cvp\_cluster\_public\_management](#input\_cvp\_cluster\_public\_management) | Whether the cluster management interfaces (https/ssh) are publically accessible over the internet. | `bool` | `false` | no |
 | <a name="input_cvp_cluster_size"></a> [cvp\_cluster\_size](#input\_cvp\_cluster\_size) | The number of nodes in the CVP cluster. Must be 1 or 3 nodes. | `number` | `1` | no |
 | <a name="input_cvp_cluster_vm_admin_user"></a> [cvp\_cluster\_vm\_admin\_user](#input\_cvp\_cluster\_vm\_admin\_user) | User that will be used to connect to CVP cluster instances. Should be used in conjunction with cvp\_cluster\_vm\_key. | `string` | `"cvpsshadmin"` | no |
+| <a name="input_cvp_cluster_vm_disk_size"></a> [cvp\_cluster\_vm\_disk\_size](#input\_cvp\_cluster\_vm\_disk\_size) | The root disk size of the VMs. This must be increased to 40 if running 2021.2.0. | `number` | `35` | no |
 | <a name="input_cvp_cluster_vm_key"></a> [cvp\_cluster\_vm\_key](#input\_cvp\_cluster\_vm\_key) | Public SSH key used to access instances in the CVP cluster. | `string` | `"~/.ssh/id_rsa.pub"` | no |
 | <a name="input_cvp_cluster_vm_password"></a> [cvp\_cluster\_vm\_password](#input\_cvp\_cluster\_vm\_password) | Password used to access instances in the CVP cluster. | `string` | `null` | no |
 | <a name="input_cvp_cluster_vm_private_key"></a> [cvp\_cluster\_vm\_private\_key](#input\_cvp\_cluster\_vm\_private\_key) | Private SSH key used to access instances in the CVP cluster. This should match the public key provided on the cvp\_cluster\_vm\_key variable. | `string` | `"~/.ssh/id_rsa"` | no |

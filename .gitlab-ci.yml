@@ -100,7 +100,7 @@ validate terraform 0.14:
     name: $TERRAFORM_TEST_IMAGE
   environment: cvp-tests
   variables:
-    VAR_FILE: "examples/one-node-cvp-deployment.tfvars"
+    VAR_FILE: "examples/single-node-cvp-deployment.tfvars"
     TERRAFORM_PIPELINE_VERSION: "0.14"
   <<: *before_terraform
   script:
@@ -113,7 +113,7 @@ validate terraform 0.15:
     name: $TERRAFORM_TEST_IMAGE
   environment: cvp-tests
   variables:
-    VAR_FILE: "examples/one-node-cvp-deployment.tfvars"
+    VAR_FILE: "examples/single-node-cvp-deployment.tfvars"
     TERRAFORM_PIPELINE_VERSION: "0.15"
   <<: *before_terraform
   script:
@@ -126,7 +126,7 @@ validate target terraform:
     name: $TERRAFORM_TEST_IMAGE
   environment: cvp-tests
   variables:
-    VAR_FILE: "examples/one-node-cvp-deployment.tfvars"
+    VAR_FILE: "examples/single-node-cvp-deployment.tfvars"
   <<: *before_terraform
   script:
     - terraform plan -state=${CI_JOB_ID}.tfstate -var-file=$VAR_FILE
@@ -136,7 +136,7 @@ launch single-node cluster:
   image: $TERRAFORM_TEST_IMAGE
   environment: cvp-tests
   variables:
-    VAR_FILE: "examples/one-node-cvp-deployment.tfvars"
+    VAR_FILE: "examples/single-node-cvp-deployment.tfvars"
   <<: *run_terraform
   artifacts:
     paths:
