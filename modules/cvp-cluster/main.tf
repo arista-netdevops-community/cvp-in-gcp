@@ -22,6 +22,10 @@ resource "google_compute_image" "centos" {
   raw_disk {
     source = var.vm_image
   }
+
+  guest_os_features {
+    type = "UEFI_COMPATIBLE"
+  }
 }
 
 resource "google_compute_disk" "cvp_nodes" {

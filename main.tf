@@ -210,7 +210,7 @@ locals {
   cvp_cluster = {
     vm_image = {
       location = var.cvp_vm_image != null ? var.cvp_vm_image : (
-        local.gcp.image.centos.version == "7.9" ? "https://storage.googleapis.com/cvp-tests/cvp-2021-2-0-tac.tar.gz" : (
+        local.gcp.image.centos.version == "7.9" ? "https://storage.googleapis.com/cvp-tests/centos79-cvp.tar.gz" : (
           local.gcp.image.centos.version == "7.7" ? "http://storage.googleapis.com/centos_minimal/centos-minimal-gcp77.tar.gz" : (
             var.cvp_cluster_centos_version == "7.6" ? "http://storage.googleapis.com/centos_minimal/centos-minimal-gcp76.tar.gz" : null
           )
@@ -269,7 +269,7 @@ module "cvp_cluster" {
 }
 
 module "cvp_provision_nodes" {
-  source         = "git::https://github.com/arista-netdevops-community/cvp-ansible-provisioning.git?ref=v3.0.2"
+  source         = "git::ssh://git@gitlab.aristanetworks.com/tac-team/cvp-ansible-provisioning.git?ref=v3.0.5"
   cloud_provider = "gcp"
 
   vm                                = local.vm
