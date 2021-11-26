@@ -1,7 +1,6 @@
 .gcloud
 .ssh
 .terraform
-.terraform.lock.hcl
 *.tfstate*
 plan.out
 dynamic/*.pem
