@@ -4,3 +4,7 @@
 .terraform.lock.hcl
 *.tfstate*
 plan.out
+dynamic/*.pem
+dynamic/*.pub
+.vscode
+.terraform.lock.hcl
