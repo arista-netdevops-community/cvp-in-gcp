@@ -269,7 +269,7 @@ module "cvp_cluster" {
 }
 
 module "cvp_provision_nodes" {
-  source         = "git::https://gitlab.aristanetworks.com/tac-team/cvp-ansible-provisioning.git?ref=v3.0.6"
+  source         = "git::https://github.com/arista-netdevops-community/cvp-ansible-provisioning.git?ref=v3.0.6"
   cloud_provider = "gcp"
 
   vm                                = local.vm
