@@ -30,7 +30,7 @@ locals {
             (var.cvp_version == "2020.2.0" || var.cvp_version == "2020.2.1" || var.cvp_version == "2020.2.2" || var.cvp_version == "2020.2.3" || var.cvp_version == "2020.2.4") ? "7.7" : (
               (var.cvp_version == "2020.3.0" || var.cvp_version == "2020.3.1") ? "7.7" : (
                 (var.cvp_version == "2021.1.0" || var.cvp_version == "2021.1.1") ? "7.7" : (
-                  (var.cvp_version == "2021.2.0") ? "7.9" : "7.7"
+                  (var.cvp_version == "2021.2.0") ? "7.9" : "7.9"
                 )
               )
             )
@@ -269,7 +269,7 @@ module "cvp_cluster" {
 }
 
 module "cvp_provision_nodes" {
-  source         = "git::https://github.com/arista-netdevops-community/cvp-ansible-provisioning.git?ref=v3.0.6"
+  source         = "git::https://github.com/arista-netdevops-community/cvp-ansible-provisioning.git?ref=v3.1.0"
   cloud_provider = "gcp"
 
   vm                                = local.vm
