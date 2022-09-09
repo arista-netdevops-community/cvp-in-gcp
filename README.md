@@ -28,7 +28,7 @@ Templates to launch fully functional CVP clusters in GCP.
 ##  1. <a name='TLDR'></a>TLDR
 Install terraform, ansible, gcloud SDK and use one of the provided `.tfvars` examples.
 
-##  2. <a name='Requisites'></a>Requisites
+##  2. <a name='Pre-Requisites'></a>Pre-Requisites
 ###  2.1. <a name='terraform'></a>terraform
 This module is tested with terraform `1.0.1`, but should work with any terraform newer than the version shown below. You can [download it from the official website][terraform-download].
 
@@ -82,6 +82,13 @@ $ gcloud auth application-default login
 
 ###  2.3. <a name='ansible'></a>ansible
 You must have ansible installed for provisioning to work. You can check installation instructions [here][ansible-install].
+
+With the new ansible releases (ansible-core) the `community.general` and `ansible.posix` collections have to be installed separately as well:
+
+`ansible-galaxy collection install community.general`
+
+`ansible-galaxy collection install ansible.posix`
+
 
 ##  3. <a name='Quickstart'></a>Quickstart
 These steps assume that you created a profile following the steps in the [gcloud client](#gcloudclient) section. You must also be in the project's directory (`cvp-in-gcp`):
